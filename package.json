@@ -1,0 +1,23 @@
+{
+  "name": "10term-mini-back",
+  "version": "1.0.0",
+  "description": "모던 애자일 10기 미니 프로젝트 백 레포지토리",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/modern-agile-team/10term-mini-back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/modern-agile-team/10term-mini-back/issues"
+  },
+  "homepage": "https://github.com/modern-agile-team/10term-mini-back#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
