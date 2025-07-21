@@ -2,7 +2,7 @@
 
 const output = {
   home: (req, res) => {
-    res.render("home/index");
+    res.send("성공");
   },
 };
 
