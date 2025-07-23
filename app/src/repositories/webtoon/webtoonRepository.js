@@ -1,6 +1,6 @@
 const db = require("../../config/db");
 
-class webtoonRepository {
+class WebtoonRepository {
     static async getAllWebtoons() {
         const query = "SELECT * FROM webtoons";
         try {
@@ -14,4 +14,4 @@ class webtoonRepository {
 
 }
 
-module.exports = webtoonRepository;
+module.exports = WebtoonRepository;

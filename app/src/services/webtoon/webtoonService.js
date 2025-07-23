@@ -2,12 +2,12 @@
 
 const webtoonRepository = require("../../repositories/webtoon/webtoonRepository");
 
-class webtoonService {
+class WebtoonService  {
     constructor(req) {
         this.body = this.body;
     }
 
-    async getAllwebtoon() {
+    async getAllWebtoons() {
         try {
             const webtoon = await webtoonRepository.getAllWebtoons();
             return {
@@ -24,4 +24,4 @@ class webtoonService {
     }
 }
 
-module.exports = webtoonService;
+module.exports = WebtoonService ;
