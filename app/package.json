@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/modern-agile-team/10term-mini-back#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
