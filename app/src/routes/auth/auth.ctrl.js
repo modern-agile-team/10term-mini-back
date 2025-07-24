@@ -20,6 +20,18 @@ const process = {
     try {
       const authService = new AuthService(req);
       const { status, success, data } = await authService.login();
+
+      if (data.refreshToken) {
+      res.cookie("refreshToken", data.refreshToken),
+        {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        };
+        delete data.refreshToken;
+      }
+      
       return res.status(status).json({ success, data });
     } catch (error) {
       console.error("login error: ", error);

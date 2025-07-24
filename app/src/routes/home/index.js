@@ -11,7 +11,9 @@ const webtoonctrl = require("../webtoon/webtoon.ctrl");
 const authValidation = require("../../validation/auth/authValidation.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.process.signUp);
-router.post("/api/uth/login", authValidation.checkUser, authCtrl.process.login);
+router.post("/api/auth/login", authValidation.checkUser, authCtrl.process.login);
+router.post("/api/auth/token", authCtrl.process.newAccessToken);
+
 router.get("/api/webtoons", webtoonctrl.process.getWebtoons);
 
 module.exports = router;
