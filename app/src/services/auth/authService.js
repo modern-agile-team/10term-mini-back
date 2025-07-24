@@ -13,20 +13,19 @@ class AuthService {
   }
 
   async signUp() {
-    const { user_id, password, nickname } = req.body;
+    const { user_id, password, nickname } = this.body;
 
-    const isuser_idExist = await this.userRepository.findByuser_id(user_id);
-    const isNickNameExist = await this.userRepository.findByNickname(nickname);
+    const isUserIdExist = await this.userRepository.findByUserId(user_id);
+    const isNicknameExist = await this.userRepository.findByNickname(nickname);
 
-    if (isuser_idExist && isNickNameExist) {
+    if (isUserIdExist && isNicknameExist) {
       return { status: 409, success: false, data: { field: "both" } };
-    } else if (isuser_idExist) {
+    } else if (isUserIdExist) {
       return { status: 409, success: false, data: { field: "user_id" } };
-    } else if (isNickNameExist) {
+    } else if (isNicknameExist) {
       return { status: 409, success: false, data: { field: "nickname" } };
     }
 
-    // 비밀번호 해시처리 후 저장
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const createdUser = await this.userRepository.createUser({
@@ -52,7 +51,7 @@ class AuthService {
   async login() {
     const { user_id, password } = this.body;
 
-    const user = await this.userRepository.findByuser_id(user_id);
+    const user = await this.userRepository.findByUserId(user_id);
     if (!user) {
       return {
         status: 404,
@@ -77,6 +76,7 @@ class AuthService {
 
     const refreshToken = this.jwtService.generateRefreshToken({
       id: user.id,
+      user_id: user.user_id,
     });
 
     return {
@@ -85,6 +85,7 @@ class AuthService {
       data: {
         message: "로그인 성공",
         accessToken,
+        refreshToken,
         user: {
           user_id: user.user_id,
           nickname: user.nickname,
@@ -93,8 +94,8 @@ class AuthService {
     };
   }
 
-  newAccessToken() {
-    const refreshToken = this.req.cookes?.refreshToken;
+  async newAccessToken() {
+    const refreshToken = this.req.cookies?.refreshToken;
     if (!refreshToken) {
       return {
         status: 400,
