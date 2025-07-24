@@ -1,14 +1,26 @@
 const db = require("../../config/db");
 
 class WebtoonRepository {
+  // 전체 웹툰 조회
   static async getAllWebtoons() {
     const query = "SELECT * FROM webtoons";
     try {
       const [rows] = await db.query(query);
       return rows;
     } catch (error) {
-      console.error("Error occurred during DB query for webtoons:", error);
-      throw new Error("데이터베이스에서 웹툰을 가져오는 데 실패했습니다.");
+      console.error("DB Error [getAllWebtoons]:", error);
+      throw new Error("전체 웹툰 데이터를 가져오는 데 실패했습니다.");
+    }
+  }
+  // 요일 필터로 웹툰 조회
+  static async getWebtoonsByDay(day) {
+    const query = "SELECT * FROM webtoons WHERE day_of_week = ?";
+    try {
+      const [rows] = await db.query(query, [day]);
+      return rows;
+    } catch (error) {
+      console.error("DB Error [getWebtoonsByDay]:", error);
+      throw new Error("요일별 웹툰 데이터를 가져오는 데 실패했습니다.");
     }
   }
 }
