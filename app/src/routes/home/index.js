@@ -10,9 +10,9 @@ const webtoonctrl = require("../webtoon/webtoon.ctrl");
 // validation 컨트롤러
 const authValidation = require("../../validation/auth/authValidation.js");
 
-router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.process.signUp);
-router.post("/api/auth/login", authValidation.checkUser, authCtrl.process.login);
-router.post("/api/auth/token", authCtrl.process.newAccessToken);
+router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
+router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
+router.post("/api/auth/token", authCtrl.newAccessToken);
 
 router.get("/api/webtoons", webtoonctrl.process.getWebtoons);
 

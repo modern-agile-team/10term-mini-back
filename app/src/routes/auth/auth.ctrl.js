@@ -2,7 +2,7 @@
 
 const AuthService = require("../../services/auth/authService.js");
 
-const process = {
+module.exports = {
   signUp: async (req, res) => {
     try {
       const authService = new AuthService(req);
@@ -57,5 +57,3 @@ const process = {
     }
   },
 };
-
-module.exports = { process };
