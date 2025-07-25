@@ -13,9 +13,9 @@ class AuthService {
   }
 
   async signUp() {
-    const { user_id, password, nickname } = this.body;
+    const { userId, password, nickname } = this.body;
 
-    const isUserIdExist = await this.userRepository.findByUserId(user_id);
+    const isUserIdExist = await this.userRepository.findByUserId(userId);
     const isNicknameExist = await this.userRepository.findByNickname(nickname);
 
     if (isUserIdExist && isNicknameExist) {
@@ -29,7 +29,7 @@ class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const createdUser = await this.userRepository.createUser({
-      user_id,
+      userId,
       password: hashedPassword,
       nickname,
     });
@@ -41,7 +41,7 @@ class AuthService {
         field: null,
         message: "회원가입 성공",
         user: {
-          user_id: createdUser.user_id,
+          userId: createdUser.user_id,
           nickname: createdUser.nickname,
         },
       },
@@ -49,9 +49,9 @@ class AuthService {
   }
 
   async login() {
-    const { user_id, password } = this.body;
+    const { userId, password } = this.body;
 
-    const user = await this.userRepository.findByUserId(user_id);
+    const user = await this.userRepository.findByUserId(userId);
     if (!user) {
       return {
         status: 404,
@@ -71,12 +71,12 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: user.id,
-      user_id: user.user_id,
+      userId: user.user_id,
     });
 
     const refreshToken = this.jwtService.generateRefreshToken({
       id: user.id,
-      user_id: user.user_id,
+      userId: user.user_id,
     });
 
     return {
@@ -87,7 +87,7 @@ class AuthService {
         accessToken,
         refreshToken,
         user: {
-          user_id: user.user_id,
+          userId: user.user_id,
           nickname: user.nickname,
         },
       },
@@ -115,7 +115,7 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: decoded.id,
-      user_id: decoded.user_id,
+      userId: decoded.user_id,
     });
 
     return {

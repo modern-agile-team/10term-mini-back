@@ -3,8 +3,8 @@
 const pool = require("../../config/db");
 
 class UserRepository {
-  async findByUserId(user_id) {
-    const [rows] = await pool.query("SELECT * FROM users WHERE user_id = ?", [user_id]);
+  async findByUserId(userId) {
+    const [rows] = await pool.query("SELECT * FROM users WHERE user_id = ?", [userId]);
     return rows[0];
   }
 
@@ -13,9 +13,9 @@ class UserRepository {
     return rows[0];
   }
 
-  async createUser({user_id, password, nickname}) {
-    const [result] = await pool.query("INSERT INTO users (user_id, password, nickname) VALUES (?, ?, ?)", [user_id, password, nickname]);
-    const user = this.findByUserId(user_id);
+  async createUser({userId, password, nickname}) {
+    const [result] = await pool.query("INSERT INTO users (user_id, password, nickname) VALUES (?, ?, ?)", [userId, password, nickname]);
+    const user = await this.findByUserId(userId);
     return user;
   }
 }
