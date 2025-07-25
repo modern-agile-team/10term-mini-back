@@ -9,12 +9,21 @@ class UserRepository {
   }
 
   async findByNickname(nickname) {
-    const [rows] = await pool.query("SELECT * FROM users WHERE nickname = ?", [nickname]);
+    const [rows] = await pool.query(
+      `SELECT * 
+      FROM users 
+      WHERE nickname = ?`,
+      [nickname]
+    );
     return rows[0];
   }
 
-  async createUser({userId, password, nickname}) {
-    const [result] = await pool.query("INSERT INTO users (user_id, password, nickname) VALUES (?, ?, ?)", [userId, password, nickname]);
+  async createUser({ userId, password, nickname }) {
+    const [result] = await pool.query(
+      `INSERT INTO users (user_id, password, nickname) 
+      VALUES (?, ?, ?)`,
+      [userId, password, nickname]
+    );
     const user = await this.findByUserId(userId);
     return user;
   }
