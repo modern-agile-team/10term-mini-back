@@ -7,18 +7,18 @@ class WebtoonService {
     try {
       const { day } = filters;
       if (!day) {
-        const webtoons = await webtoonRepository.getAllWebtoons();
+        const allWebtoons = await webtoonRepository.getAllWebtoons();
         return {
           status: 200,
           success: true,
-          data: { webtoons },
+          data: { allWebtoons },
         };
       } else if (day) {
-        const webtoons = await webtoonRepository.getWebtoonsByDay(day);
+        const webtoonsByDay = await webtoonRepository.getWebtoonsByDay(day);
         return {
           status: 200,
           success: true,
-          data: { webtoons },
+          data: { webtoonsByDay },
         };
       } else {
         return {
