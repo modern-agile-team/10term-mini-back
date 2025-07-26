@@ -3,11 +3,12 @@
 const WebtoonService = require("../../services/webtoon/webtoonService");
 
 const process = {
-  //전체 웹툰 조회
+  // 웹툰 조회
   getWebtoons: async (req, res) => {
     try {
+      const filters = req.query;
       const webtoonService = new WebtoonService();
-      const { status, success, data } = await webtoonService.getAllWebtoons();
+      const { status, success, data } = await webtoonService.getWebtoons(filters);
       return res.status(status).json({
         status,
         success,
