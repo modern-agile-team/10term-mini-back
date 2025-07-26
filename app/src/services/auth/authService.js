@@ -17,11 +17,11 @@ class AuthService {
 
     const conflictFields = [];
 
-    const isUserNameExist = await this.userRepository.findByUserName(userName);
-    if (isUserNameExist) conflictFields.push("userName");
+    const existsUserName = await this.userRepository.findByUserName(userName);
+    if (existsUserName) conflictFields.push("userName");
 
-    const isNicknameExist = await this.userRepository.findByNickname(nickname);
-    if (isNicknameExist) conflictFields.push("nickname");
+    const existsNickname = await this.userRepository.findByNickname(nickname);
+    if (existsNickname) conflictFields.push("nickname");
 
     if (conflictFields.length > 0) {
       return {
@@ -76,12 +76,12 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: user.id,
-      userName: user.username,
+      username: user.username,
     });
 
     const refreshToken = this.jwtService.generateRefreshToken({
       id: user.id,
-      userName: user.username,
+      username: user.username,
     });
 
     return {
@@ -120,7 +120,7 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: decoded.id,
-      userName: decoded.userName,
+      username: decoded.username,
     });
 
     return {
