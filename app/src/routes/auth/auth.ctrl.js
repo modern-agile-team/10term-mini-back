@@ -43,13 +43,13 @@ module.exports = {
     }
   },
 
-  newAccessToken: async (req, res) => {
+  issueAccessToken: async (req, res) => {
     try {
       const authService = new AuthService(req);
-      const { status, success, data } = await authService.newAccessToken();
+      const { status, success, data } = await authService.issueAccessToken();
       return res.status(status).json({ success, data });
     } catch (error) {
-      console.error("newAccessToken error:", error);
+      console.error("issueAccessToken error:", error);
       return res.status(500).json({
         success: false,
         data: { message: "서버 오류가 발생했습니다." },

@@ -3,7 +3,7 @@
 const { body, validationResult } = require("express-validator");
 
 const checkAddUser = [
-  body("userId")
+  body("userName")
     .isLength({ min: 5, max: 20 })
     .withMessage("아이디는 5 ~ 20자여야 합니다.")
     .matches(/^[a-z0-9_-]+$/)
@@ -12,20 +12,8 @@ const checkAddUser = [
   body("password")
     .isLength({ min: 8, max: 20 })
     .withMessage("비밀번호는 8 ~ 20자여야 합니다.")
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}\[\]:;"'<>,.?/\\|]).{8,20}$/)
-    .withMessage(
-      "비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 하며 8~20자여야 합니다."
-    ),
-
-  body("passwordConfirm")
-    .exists()
-    .withMessage("비밀번호 확인을 입력해주세요")
-    .custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("비밀번호 확인이 일치하지 않습니다.");
-      }
-      return true;
-    }),
+    .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}\[\]:;"'<>,.?/\\|])/)
+    .withMessage("비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 합니다."),
 
   body("nickname").custom((value) => {
     const korean = value.match(/[가-힣]/g) || [];
@@ -53,7 +41,7 @@ const checkAddUser = [
 ];
 
 const checkUser = [
-  body("userId").notEmpty().withMessage("아이디를 입력해주세요."),
+  body("userName").notEmpty().withMessage("아이디를 입력해주세요."),
   body("password").notEmpty().withMessage("비밀번호를 입력해주세요"),
 
   (req, res, next) => {

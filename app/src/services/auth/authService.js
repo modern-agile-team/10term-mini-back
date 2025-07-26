@@ -13,23 +13,28 @@ class AuthService {
   }
 
   async signUp() {
-    const { userId, password, nickname } = this.body;
+    const { userName, password, nickname } = this.body;
 
-    const isUserIdExist = await this.userRepository.findByUserId(userId);
+    const conflictFields = [];
+
+    const isUserNameExist = await this.userRepository.findByUserName(userName);
+    if (isUserNameExist) conflictFields.push("userName");
+
     const isNicknameExist = await this.userRepository.findByNickname(nickname);
+    if (isNicknameExist) conflictFields.push("nickname");
 
-    if (isUserIdExist && isNicknameExist) {
-      return { status: 409, success: false, data: { field: "both" } };
-    } else if (isUserIdExist) {
-      return { status: 409, success: false, data: { field: "user_id" } };
-    } else if (isNicknameExist) {
-      return { status: 409, success: false, data: { field: "nickname" } };
+    if (conflictFields.length > 0) {
+      return {
+        status: 409,
+        success: false,
+        data: { fields: conflictFields },
+      };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const createdUser = await this.userRepository.createUser({
-      userId,
+      userName,
       password: hashedPassword,
       nickname,
     });
@@ -41,7 +46,7 @@ class AuthService {
         field: null,
         message: "회원가입 성공",
         user: {
-          userId: createdUser.user_id,
+          userName: createdUser.userName,
           nickname: createdUser.nickname,
         },
       },
@@ -49,14 +54,14 @@ class AuthService {
   }
 
   async login() {
-    const { userId, password } = this.body;
+    const { userName, password } = this.body;
 
-    const user = await this.userRepository.findByUserId(userId);
+    const user = await this.userRepository.findByUserName(userName);
     if (!user) {
       return {
-        status: 404,
+        status: 401,
         success: false,
-        data: { message: "존재하지 않는 아이디입니다." },
+        data: { message: "존재하지 않는 유저입니다." },
       };
     }
 
@@ -71,12 +76,12 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: user.id,
-      userId: user.user_id,
+      userName: user.username,
     });
 
     const refreshToken = this.jwtService.generateRefreshToken({
       id: user.id,
-      userId: user.user_id,
+      userName: user.username,
     });
 
     return {
@@ -87,14 +92,14 @@ class AuthService {
         accessToken,
         refreshToken,
         user: {
-          userId: user.user_id,
+          userName: user.username,
           nickname: user.nickname,
         },
       },
     };
   }
 
-  async newAccessToken() {
+  async issueAccessToken() {
     const refreshToken = this.req.cookies?.refreshToken;
     if (!refreshToken) {
       return {
@@ -115,7 +120,7 @@ class AuthService {
 
     const accessToken = this.jwtService.generateAccessToken({
       id: decoded.id,
-      userId: decoded.user_id,
+      userName: decoded.userName,
     });
 
     return {
