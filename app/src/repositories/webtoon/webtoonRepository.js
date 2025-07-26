@@ -2,10 +2,10 @@ const db = require("../../config/db");
 
 class WebtoonRepository {
   // 전체 웹툰 조회
-  static async getAllWebtoons() {
+  async getAllWebtoons() {
     const query = `
     SELECT id, title, day_of_week, thumbnail_url
-    FROM webtoons
+    FROM webtoons;
     `;
     try {
       const [rows] = await db.query(query);
@@ -16,11 +16,11 @@ class WebtoonRepository {
     }
   }
   // 요일 필터로 웹툰 조회
-  static async getWebtoonsByDay(day) {
+  async getWebtoonsByDay(day) {
     const query = `
     SELECT id, title, day_of_week, thumbnail_url
     FROM webtoons
-    WHERE day_of_week = ?
+    WHERE day_of_week = ?;
     `;
     try {
       const [rows] = await db.query(query, [day]);
