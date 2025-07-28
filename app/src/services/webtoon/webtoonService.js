@@ -1,15 +1,28 @@
 "use strict";
 
-const webtoonRepository = require("../../repositories/webtoon/webtoonRepository");
+const WebtoonRepository = require("../../repositories/webtoon/webtoonRepository");
 
 class WebtoonService {
-  async getAllWebtoons() {
+  constructor() {
+    this.webtoonRepository = new WebtoonRepository();
+  }
+
+  async getWebtoons(filters) {
     try {
-      const webtoon = await webtoonRepository.getAllWebtoons();
+      const { day } = filters;
+      if (!day) {
+        const allWebtoons = await this.webtoonRepository.getAllWebtoons();
+        return {
+          status: 200,
+          success: true,
+          data: { allWebtoons },
+        };
+      }
+      const webtoonsByDay = await this.webtoonRepository.getWebtoonsByDay(day);
       return {
         status: 200,
         success: true,
-        data: { webtoon },
+        data: { webtoonsByDay },
       };
     } catch (error) {
       console.error("Error occurred while fetching webtoons:", error);
