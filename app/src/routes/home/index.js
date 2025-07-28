@@ -4,8 +4,8 @@ const express = require("express");
 const router = express.Router();
 
 // 컨트롤러
-const authCtrl = require("../auth/auth.ctrl.js");
-const webtoonctrl = require("../webtoon/webtoon.ctrl");
+const authCtrl = require("../auth/authController.js");
+const webtoonctrl = require("../webtoon/webtoonController");
 
 // validation 미들웨어
 const authValidation = require("../../validation/auth/authValidation.js");

@@ -3,14 +3,14 @@
 const pool = require("../../config/db");
 
 class UserRepository {
-  async findByUserName(userName) {
+  async findByUsername(username) {
     const [rows] = await pool.query(
       `
       SELECT * 
       FROM users 
       WHERE username = ?;
       `,
-      [userName]
+      [username]
     );
     return rows[0];
   }
@@ -27,15 +27,15 @@ class UserRepository {
     return rows[0];
   }
 
-  async createUser({ userName, password, nickname }) {
+  async createUser({ username, password, nickname }) {
     const [result] = await pool.query(
       `
       INSERT INTO users (username, password, nickname) 
       VALUES (?, ?, ?);
       `,
-      [userName, password, nickname]
+      [username, password, nickname]
     );
-    const user = await this.findByUserName(userName);
+    const user = await this.findByUsername(username);
     return user;
   }
 }

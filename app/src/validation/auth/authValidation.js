@@ -3,7 +3,7 @@
 const { body, validationResult } = require("express-validator");
 
 const checkAddUser = [
-  body("userName")
+  body("username")
     .isLength({ min: 5, max: 20 })
     .withMessage("아이디는 5 ~ 20자여야 합니다.")
     .matches(/^[a-z0-9_-]+$/)
@@ -41,7 +41,7 @@ const checkAddUser = [
 ];
 
 const checkUser = [
-  body("userName").notEmpty().withMessage("아이디를 입력해주세요."),
+  body("username").notEmpty().withMessage("아이디를 입력해주세요."),
   body("password").notEmpty().withMessage("비밀번호를 입력해주세요"),
 
   (req, res, next) => {

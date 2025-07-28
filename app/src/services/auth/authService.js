@@ -13,12 +13,12 @@ class AuthService {
   }
 
   async signUp() {
-    const { userName, password, nickname } = this.body;
+    const { username, password, nickname } = this.body;
 
     const conflictFields = [];
 
-    const existsUserName = await this.userRepository.findByUserName(userName);
-    if (existsUserName) conflictFields.push("userName");
+    const existsUsername = await this.userRepository.findByUsername(username);
+    if (existsUsername) conflictFields.push("username");
 
     const existsNickname = await this.userRepository.findByNickname(nickname);
     if (existsNickname) conflictFields.push("nickname");
@@ -34,9 +34,19 @@ class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const createdUser = await this.userRepository.createUser({
-      userName,
+      username,
       password: hashedPassword,
       nickname,
+    });
+
+    const accessToken = this.jwtService.generateAccessToken({
+      id: createdUser.id,
+      username: createdUser.username,
+    });
+
+    const refreshToken = this.jwtService.generateRefreshToken({
+      id: createdUser.id,
+      username: createdUser.username,
     });
 
     return {
@@ -45,8 +55,10 @@ class AuthService {
       data: {
         field: null,
         message: "회원가입 성공",
+        accessToken,
+        refreshToken,
         user: {
-          userName: createdUser.userName,
+          username: createdUser.username,
           nickname: createdUser.nickname,
         },
       },
@@ -54,9 +66,9 @@ class AuthService {
   }
 
   async login() {
-    const { userName, password } = this.body;
+    const { username, password } = this.body;
 
-    const user = await this.userRepository.findByUserName(userName);
+    const user = await this.userRepository.findByUsername(username);
     if (!user) {
       return {
         status: 401,
@@ -92,7 +104,7 @@ class AuthService {
         accessToken,
         refreshToken,
         user: {
-          userName: user.username,
+          username: user.username,
           nickname: user.nickname,
         },
       },
