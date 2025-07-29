@@ -67,7 +67,7 @@ module.exports = {
         data: { message: "로그아웃 되었습니다." },
       });
     } catch (error) {
-      console.log("logout error: ", error);
+      console.error("logout error: ", error);
       return res.status(500).json({
         success: false,
         data: { message: "서버 오류가 발생했습니다." },
