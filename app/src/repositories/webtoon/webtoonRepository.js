@@ -14,8 +14,8 @@ class WebtoonRepository {
         ROUND(AVG(e.rating_avg), 2) AS average_rating
       FROM webtoons w
       LEFT JOIN episodes e ON w.id = e.webtoon_id
-      where w.day_of_week = ?
-      GROUP BY w.id, w.title, w.day_of_week, w.thumbnail_url
+      WHERE w.day_of_week = ?
+      GROUP BY w.id
       ORDER BY average_rating DESC;
       `;
     } else {
@@ -23,11 +23,11 @@ class WebtoonRepository {
       SELECT id, title, day_of_week, thumbnail_url
       FROM webtoons
       WHERE day_of_week = ?
-      ORDER BY ${sort} DESC;
+      ORDER BY ? DESC;
       `;
     }
     try {
-      const [rows] = await db.query(query, [day]);
+      const [rows] = await db.query(query, [day, sort]);
       return rows;
     } catch (error) {
       console.error("DB Error [getWebtoonsByDaySorted]:", error);
@@ -39,7 +39,8 @@ class WebtoonRepository {
     const query = `
     SELECT id, title, day_of_week, thumbnail_url
     FROM webtoons
-    WHERE day_of_week = ? ORDER BY like_count DESC;
+    WHERE day_of_week = ? 
+    ORDER BY like_count DESC;
     `;
     try {
       const [rows] = await db.query(query, [day]);
@@ -62,19 +63,18 @@ class WebtoonRepository {
         ROUND(AVG(e.rating_avg), 2) AS average_rating
       FROM webtoons w
       LEFT JOIN episodes e ON w.id = e.webtoon_id
-      GROUP BY w.id, w.title, w.day_of_week, w.thumbnail_url
+      GROUP BY w.id
       ORDER BY average_rating DESC;
       `;
     } else {
       query = `
       SELECT id, title, day_of_week, thumbnail_url
       FROM webtoons
-      ORDER BY ${sort} DESC;
+      ORDER BY ? DESC;
     `;
     }
-
     try {
-      const [rows] = await db.query(query);
+      const [rows] = await db.query(query, [sort]);
       return rows;
     } catch (error) {
       console.error("DB Error [getAllWebtoonsSorted]:", error);
@@ -85,7 +85,8 @@ class WebtoonRepository {
   async getAllWebtoons() {
     const query = `
     SELECT id, title, day_of_week, thumbnail_url
-    FROM webtoons ORDER BY like_count DESC;
+    FROM webtoons
+    ORDER BY like_count DESC;
     `;
     try {
       const [rows] = await db.query(query);

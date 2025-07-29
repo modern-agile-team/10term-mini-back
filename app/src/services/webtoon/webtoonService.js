@@ -2,6 +2,13 @@
 
 const WebtoonRepository = require("../../repositories/webtoon/webtoonRepository");
 
+const DB_COLUMN = {
+  like: "like_count",
+  updated: "updated_at",
+  view: "view_count",
+  rate: "rating_avg",
+};
+
 class WebtoonService {
   constructor() {
     this.webtoonRepository = new WebtoonRepository();
@@ -11,51 +18,26 @@ class WebtoonService {
     try {
       const { day, sort } = filters;
 
-      const dbKey = {
-        like: "like_count",
-        updated: "updated_at",
-        view: "view_count",
-        rate: "rating_avg",
-      };
+      const dbSortKey = DB_COLUMN[sort];
 
-      const dbSortKey = dbKey[sort];
-
-      if (sort && !dbSortKey) throw new Error("유효하지 않은 sort 값입니다.");
+      let webtoons;
 
       if (day) {
         if (dbSortKey) {
-          const webtoonsByDaySorted = await this.webtoonRepository.getWebtoonsByDaySorted(
-            day,
-            dbSortKey
-          );
-          return {
-            status: 200,
-            success: true,
-            data: { webtoonsByDaySorted },
-          };
+          webtoons = await this.webtoonRepository.getWebtoonsByDaySorted(day, dbSortKey);
+        } else {
+          webtoons = await this.webtoonRepository.getWebtoonsByDay(day);
         }
-        const webtoonsByDay = await this.webtoonRepository.getWebtoonsByDay(day);
-        return {
-          status: 200,
-          success: true,
-          data: { webtoonsByDay },
-        };
+      } else if (dbSortKey) {
+        webtoons = await this.webtoonRepository.getAllWebtoonsSorted(dbSortKey);
+      } else {
+        webtoons = await this.webtoonRepository.getAllWebtoons();
       }
 
-      if (dbSortKey) {
-        const allWebtoonsSorted = await this.webtoonRepository.getAllWebtoonsSorted(dbSortKey);
-        return {
-          status: 200,
-          success: true,
-          data: { allWebtoonsSorted },
-        };
-      }
-
-      const allWebtoons = await this.webtoonRepository.getAllWebtoons();
       return {
         status: 200,
         success: true,
-        data: { allWebtoons },
+        data: { webtoons },
       };
     } catch (error) {
       console.error("Error occurred while fetching webtoons:", error);
