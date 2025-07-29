@@ -23,18 +23,18 @@ class WebtoonRepository {
       SELECT id, title, day_of_week, thumbnail_url
       FROM webtoons
       WHERE day_of_week = ?
-      ORDER BY ? DESC;
+      ORDER BY ${sort} DESC;
       `;
     }
     try {
-      const [rows] = await db.query(query, [day, sort]);
+      const [rows] = await db.query(query, [day]);
       return rows;
     } catch (error) {
       console.error("DB Error [getWebtoonsByDaySorted]:", error);
       throw new Error("요일 + 정렬 조건으로 웹툰 데이터를 가져오는 데 실패했습니다.");
     }
   }
-  /// 요일조건 기준으로 웹툰 데이터 조회
+  // 요일조건 기준으로 웹툰 데이터 조회
   async getWebtoonsByDay(day) {
     const query = `
     SELECT id, title, day_of_week, thumbnail_url
@@ -70,11 +70,11 @@ class WebtoonRepository {
       query = `
       SELECT id, title, day_of_week, thumbnail_url
       FROM webtoons
-      ORDER BY ? DESC;
+      ORDER BY ${sort} DESC;
     `;
     }
     try {
-      const [rows] = await db.query(query, [sort]);
+      const [rows] = await db.query(query);
       return rows;
     } catch (error) {
       console.error("DB Error [getAllWebtoonsSorted]:", error);

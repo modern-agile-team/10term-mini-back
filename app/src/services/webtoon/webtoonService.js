@@ -19,6 +19,7 @@ class WebtoonService {
       const { day, sort } = filters;
 
       const dbSortKey = DB_COLUMN[sort];
+      if (sort && !dbSortKey) throw new Error("유효하지 않은 sort 값입니다.");
 
       let webtoons;
 
