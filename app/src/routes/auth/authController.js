@@ -1,6 +1,7 @@
 "use strict";
 
 const AuthService = require("../../services/auth/authService.js");
+const { setRefreshToken, clearRefreshToken } = require("../../utils/cookie.js");
 
 module.exports = {
   signUp: async (req, res) => {
@@ -9,13 +10,7 @@ module.exports = {
       const { status, success, data } = await authService.signUp();
 
       if (data.refreshToken) {
-        res.cookie("refreshToken", data.refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
+        setRefreshToken(res, data.refreshToken);
         delete data.refreshToken;
       }
 
@@ -35,13 +30,7 @@ module.exports = {
       const { status, success, data } = await authService.login();
 
       if (data.refreshToken) {
-        res.cookie("refreshToken", data.refreshToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
-
+        setRefreshToken(res, data.refreshToken);
         delete data.refreshToken;
       }
 
@@ -71,11 +60,7 @@ module.exports = {
 
   logout: async (req, res) => {
     try {
-      res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      });
+      clearRefreshToken(res);
 
       return res.status(200).json({
         success: true,
