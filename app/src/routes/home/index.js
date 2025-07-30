@@ -13,6 +13,8 @@ const authValidation = require("../../validation/auth/authValidation.js");
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
 router.post("/api/auth/token", authCtrl.issueAccessToken);
+router.post("/api/auth/logout", authCtrl.logout);
+
 router.get("/api/webtoons", webtoonctrl.process.getWebtoons);
 
 module.exports = router;
