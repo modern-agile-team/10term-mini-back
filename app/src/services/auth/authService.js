@@ -1,7 +1,7 @@
 "use strict";
 
 const UserRepository = require("../../repositories/user/userRepository");
-const JwtService = require("../../utils/jwtService");
+const JwtService = require("../../common/utils/jwtService");
 const bcrypt = require("bcrypt");
 
 class AuthService {

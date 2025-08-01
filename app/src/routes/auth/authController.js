@@ -1,7 +1,7 @@
 "use strict";
 
 const AuthService = require("../../services/auth/authService.js");
-const { setRefreshToken, clearRefreshToken } = require("../../utils/cookie.js");
+const { setRefreshToken, clearRefreshToken } = require("../../common/utils/cookie.js");
 
 module.exports = {
   signUp: async (req, res) => {
