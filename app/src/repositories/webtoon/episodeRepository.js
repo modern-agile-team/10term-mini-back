@@ -4,7 +4,7 @@ const db = require("../../config/db");
 
 class EpisodeRepository {
   // 웹툰에 맞는 회차 불러오기
-  async getEpisodeById(webtoonId) {
+  async getEpisodesByWebtoonId(webtoonId) {
     const query = `
         SELECT
           episode_no,
@@ -19,7 +19,7 @@ class EpisodeRepository {
       const [rows] = await db.query(query, [webtoonId]);
       return rows;
     } catch (error) {
-      console.error("DB Error [getEpisodeById]:", error);
+      console.error("DB Error [getEpisodesByWebtoonId]:", error);
       throw new Error("웹툰의 회차정보를 가져오는 데 실패했습니다.");
     }
   }

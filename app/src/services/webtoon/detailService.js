@@ -7,25 +7,9 @@ class DetailService {
     this.detailRepository = new DetailRepository();
   }
 
-  // snake_case → camelCase 변환 함수
-  mapDetailKeys(detail) {
-    return {
-      id: detail.id,
-      title: detail.title,
-      writer: detail.writer,
-      illustrator: detail.illustrator,
-      dayOfWeek: detail.day_of_week,
-      ageRating: detail.age_rating,
-      description: detail.description,
-      thumbnailUrl: detail.thumbnail_url,
-      favoriteCount: detail.favorite_count,
-    };
-  }
-
   async getWebtoonDetail(webtoonId) {
     try {
-      const dbDetail = await this.detailRepository.getWebtoonById(webtoonId);
-      const detail = this.mapDetailKeys(dbDetail);
+      const detail = await this.detailRepository.getWebtoonByWebtoonId(webtoonId);
 
       return {
         status: 200,

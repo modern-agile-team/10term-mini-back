@@ -4,7 +4,7 @@ const db = require("../../config/db");
 
 class DetailRepository {
   // 웹툰 상세 정보 불러오기
-  async getWebtoonById(webtoonId) {
+  async getWebtoonByWebtoonId(webtoonId) {
     const query = `
       SELECT 
         id, 

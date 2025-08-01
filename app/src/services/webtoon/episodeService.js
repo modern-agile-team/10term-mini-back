@@ -1,28 +1,15 @@
 "use strict";
 
 const EpisodeRepository = require("../../repositories/webtoon/episodeRepository");
-const { convertUTCtoKST } = require("../../utils/dateUtil");
 
 class EpisodeService {
   constructor() {
     this.episodeRepository = new EpisodeRepository();
   }
 
-  // snake_case → camelCase 변환 함수
-  mapEpisodeKeys(episode) {
-    return {
-      episodeNo: episode.episode_no,
-      title: episode.title,
-      imgUrl: episode.img_url,
-      postedTime: convertUTCtoKST(episode.posted_time),
-      ratingAvg: episode.rating_avg,
-    };
-  }
-
   async getWebtoonEpisodes(webtoonId) {
     try {
-      const rawEpisodes = await this.episodeRepository.getEpisodeById(webtoonId);
-      const episodes = rawEpisodes.map((ep) => this.mapEpisodeKeys(ep));
+      const episodes = await this.episodeRepository.getEpisodesByWebtoonId(webtoonId);
 
       return {
         status: 200,
