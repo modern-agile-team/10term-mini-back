@@ -8,7 +8,7 @@ class CommentRepository {
       `
       SELECT * 
       FROM comments 
-      WHERE id = ?
+      WHERE id = ?;
       `,
       [commentId]
     );
