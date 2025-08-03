@@ -1,21 +1,13 @@
 "use strict";
 
 const CommentRepository = require("../../repositories/comment/commentRepository.js");
-const toCamelCase = require("../../common/utils/toCamelCase.js");
 
 class CommentService {
-  constructor(req) {
-    this.req = req;
-    this.body = req.body;
-    this.params = req.params;
+  constructor() {
     this.commentRepository = new CommentRepository();
   }
 
-  async createComment() {
-    const { episodeId } = this.params;
-    const { content, parentId } = this.body;
-    const userId = this.req.user.id;
-
+  async createComment(episodeId, content, parentId, userId) {
     if (parentId) {
       const parentComment = await this.commentRepository.findById(parentId);
       if (!parentComment) {
@@ -47,25 +39,13 @@ class CommentService {
       success: true,
       data: {
         message: "댓글 작성 성공",
-        content: toCamelCase(newComment),
+        content: newComment,
       },
     };
   }
 
-  async updateComment() {
-    const { commentId } = this.params;
-    const { content } = this.body;
-    const userId = this.req.user.id;
-
-    if (!commentId) {
-      return {
-        status: 400,
-        success: false,
-        data: { message: "댓글 ID가 필요합니다." },
-      };
-    }
-
-    const existingComment = toCamelCase(await this.commentRepository.findById(commentId));
+  async updateComment(commentId, content, userId) {
+    const existingComment = await this.commentRepository.findById(commentId);
     if (!existingComment) {
       return {
         status: 404,
@@ -82,9 +62,7 @@ class CommentService {
       };
     }
 
-    const updatedComment = toCamelCase(
-      await this.commentRepository.updateComment(commentId, { content })
-    );
+    const updatedComment = await this.commentRepository.updateComment(commentId, { content });
 
     return {
       status: 200,
@@ -96,19 +74,8 @@ class CommentService {
     };
   }
 
-  async deleteComment() {
-    const { commentId } = this.params;
-    const userId = this.req.user.id;
-
-    if (!commentId) {
-      return {
-        status: 400,
-        success: false,
-        data: { message: "댓글 ID가 필요합니다." },
-      };
-    }
-
-    const existingComment = toCamelCase(await this.commentRepository.findById(commentId));
+  async deleteComment(commentId, userId) {
+    const existingComment = await this.commentRepository.findById(commentId);
     if (!existingComment) {
       return {
         status: 404,
@@ -134,11 +101,7 @@ class CommentService {
     };
   }
 
-  async reactComment() {
-    const { commentId } = this.params;
-    const { type } = this.body;
-    const userId = this.req.user.id;
-
+  async reactComment(commentId, type, userId) {
     const existingComment = await this.commentRepository.findById(commentId);
     if (!existingComment) {
       return {
@@ -152,7 +115,7 @@ class CommentService {
 
     let finalReaction = null;
 
-    if (type === "none") {
+    if (type === null) {
       if (existingReaction) {
         await this.commentRepository.deleteReaction(commentId, userId);
         finalReaction = null;
@@ -167,7 +130,7 @@ class CommentService {
           finalReaction = { type };
         }
       } else {
-        await this.commentRepository.insertReaction(commentId, userId, type);
+        await this.commentRepository.createReaction(commentId, userId, type);
         finalReaction = { type };
       }
     }
@@ -180,7 +143,7 @@ class CommentService {
       data: {
         message: "댓글 반응 처리 완료",
         reactions: reactionCounts,
-        myReaction: finalReaction ? finalReaction.type : "none",
+        myReaction: finalReaction ? finalReaction.type : null,
       },
     };
   }

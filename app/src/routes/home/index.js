@@ -23,23 +23,27 @@ router.get("/api/webtoons", webtoonCtrl.process.getWebtoons);
 router.post(
   "/api/episodes/:episodeId/comments",
   authMiddleware,
+  commentValidation.checkEpisodeIdParam,
   commentValidation.checkAddComment,
   commentCtrl.createComment
 );
 router.patch(
   "/api/comments/:commentId",
   authMiddleware,
+  commentValidation.checkCommentIdParam,
   commentValidation.checkUpdateComment,
   commentCtrl.updateComment
 );
 router.delete(
   "/api/comments/:commentId",
   authMiddleware,
+  commentValidation.checkCommentIdParam,
   commentCtrl.deleteComment
 );
-router.post(
+router.put(
   "/api/comments/:commentId/reaction",
   authMiddleware,
+  commentValidation.checkCommentIdParam,
   commentValidation.checkReactionType,
   commentCtrl.reactComment
 );

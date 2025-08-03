@@ -1,6 +1,7 @@
 "use strict";
 
 const pool = require("../../config/db");
+const toCamelCase = require("../../common/utils/toCamelCase.js");
 
 class CommentRepository {
   async findById(commentId) {
@@ -12,7 +13,7 @@ class CommentRepository {
       `,
       [commentId]
     );
-    return rows[0];
+    return toCamelCase(rows[0]);
   }
 
   async createComment({ episodeId, userId, content, parentId }) {
@@ -33,7 +34,7 @@ class CommentRepository {
       [result.insertId]
     );
 
-    return newRows[0];
+    return toCamelCase(newRows[0]);
   }
 
   async updateComment(commentId, { content }) {
@@ -55,7 +56,7 @@ class CommentRepository {
       [commentId]
     );
 
-    return updateRows[0];
+    return toCamelCase(updateRows[0]);
   }
 
   async deleteComment(commentId) {
@@ -77,10 +78,10 @@ class CommentRepository {
       `,
       [commentId, userId]
     );
-    return rows[0];
+    return toCamelCase(rows[0]);
   }
 
-  async insertReaction(commentId, userId, type) {
+  async createReaction(commentId, userId, type) {
     await pool.query(
       `
       INSERT INTO comment_likes (comment_id, user_id, reaction_type)
