@@ -13,7 +13,7 @@ class EpisodeRepository {
           posted_time,
           rating_avg
         FROM episodes
-        WHERE webtoon_id = ?
+        WHERE webtoon_id = ?;
         `;
     try {
       const [rows] = await db.query(query, [webtoonId]);
