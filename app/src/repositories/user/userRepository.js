@@ -1,6 +1,6 @@
 "use strict";
 
-const pool = require("../../config/db");
+const pool = require("@config/db");
 
 class UserRepository {
   async findByUsername(username) {

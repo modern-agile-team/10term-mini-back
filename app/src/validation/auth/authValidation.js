@@ -1,7 +1,7 @@
 "use strict";
 
 const { body } = require("express-validator");
-const { createValidation } = require("../../common/middleware/validationHelper.js");
+const { createValidation } = require("@middleware/validationHelper.js");
 
 const checkAddUser = createValidation(
   body("username")
@@ -34,7 +34,7 @@ const checkAddUser = createValidation(
 
 const checkUser = createValidation(
   body("username").notEmpty().withMessage("아이디를 입력해주세요."),
-  body("password").notEmpty().withMessage("비밀번호를 입력해주세요"),
+  body("password").notEmpty().withMessage("비밀번호를 입력해주세요")
 );
 
 module.exports = { checkAddUser, checkUser };

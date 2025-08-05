@@ -1,7 +1,7 @@
 "use strict";
 
 const pool = require("../../config/db");
-const toCamelCase = require("../../common/utils/toCamelCase.js");
+const toCamelCase = require("@utils/toCamelCase.js");
 
 class CommentRepository {
   async findById(commentId) {

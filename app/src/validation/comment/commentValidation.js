@@ -1,7 +1,7 @@
 "use strict";
 
 const { body, param } = require("express-validator");
-const { createValidation } = require("../../common/middleware/validationHelper.js");
+const { createValidation } = require("@middleware/validationHelper.js");
 
 const checkAddComment = createValidation(
   body("content").notEmpty().withMessage("내용을 입력해주세요."),
@@ -25,19 +25,11 @@ const checkReactionType = createValidation(
 );
 
 const checkCommentIdParam = createValidation(
-  param("commentId")
-    .exists()
-    .withMessage("댓글 ID가 필요합니다.")
-    .isInt({ min: 1 })
-    .withMessage("댓글 ID는 1 이상의 정수여야 합니다.")
+  param("commentId").isInt({ min: 1 }).withMessage("댓글 ID는 1 이상의 정수여야 합니다.")
 );
 
 const checkEpisodeIdParam = createValidation(
-  param("episodeId")
-    .exists()
-    .withMessage("에피소드 ID가 필요합니다.")
-    .isInt({ min: 1 })
-    .withMessage("에피소드 ID는 1 이상의 정수여야 합니다.")
+  param("episodeId").isInt({ min: 1 }).withMessage("에피소드 ID는 1 이상의 정수여야 합니다.")
 );
 
 module.exports = {
