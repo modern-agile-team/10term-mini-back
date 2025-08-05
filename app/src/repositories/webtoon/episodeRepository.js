@@ -1,22 +1,23 @@
 "use strict";
 
-const db = require("../../config/db");
+const pool = require("../../config/db");
 
 class EpisodeRepository {
   // 웹툰에 맞는 회차 불러오기
   async getEpisodesByWebtoonId(webtoonId) {
     const query = `
         SELECT
+          id,
           episode_no,
           title,
-          img_url,
+          thumbnail_url,
           posted_time,
           rating_avg
         FROM episodes
         WHERE webtoon_id = ?;
         `;
     try {
-      const [rows] = await db.query(query, [webtoonId]);
+      const [rows] = await pool.query(query, [webtoonId]);
       return rows;
     } catch (error) {
       console.error("DB Error [getEpisodesByWebtoonId]:", error);
