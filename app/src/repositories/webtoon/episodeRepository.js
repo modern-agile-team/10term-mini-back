@@ -1,0 +1,29 @@
+"use strict";
+
+const pool = require("../../config/db");
+
+class EpisodeRepository {
+  // 웹툰에 맞는 회차 불러오기
+  async getEpisodesByWebtoonId(webtoonId) {
+    const query = `
+        SELECT
+          id,
+          episode_no,
+          title,
+          thumbnail_url,
+          posted_time,
+          rating_avg
+        FROM episodes
+        WHERE webtoon_id = ?;
+        `;
+    try {
+      const [rows] = await pool.query(query, [webtoonId]);
+      return rows;
+    } catch (error) {
+      console.error("DB Error [getEpisodesByWebtoonId]:", error);
+      throw new Error("웹툰의 회차정보를 가져오는 데 실패했습니다.");
+    }
+  }
+}
+
+module.exports = EpisodeRepository;
