@@ -1,7 +1,7 @@
 "use strict";
 
 const UserRepository = require("../../repositories/user/userRepository");
-const JwtService = require("../../utils/jwtService");
+const JwtService = require("../../common/utils/jwtService");
 const bcrypt = require("bcrypt");
 
 class AuthService {
@@ -25,9 +25,9 @@ class AuthService {
 
     if (conflictFields.length > 0) {
       return {
-        status: 409,
         success: false,
-        data: { fields: conflictFields },
+        status: 409,
+        data: { field: conflictFields },
       };
     }
 

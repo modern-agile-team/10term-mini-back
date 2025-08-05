@@ -7,10 +7,13 @@ const router = express.Router();
 const authCtrl = require("../auth/authController.js");
 const webtoonCtrl = require("../webtoon/webtoonController.js");
 const episodeCtrl = require("../webtoon/episodeController.js");
+const commentCtrl = require("../comment/commentController.js");
 
-// validation 미들웨어
+// 미들웨어
 const authValidation = require("../../validation/auth/authValidation.js");
 const webtoonValidation = require("../../validation/webtoon/webtoonValidation.js");
+const commentValidation = require("../../validation/comment/commentValidation.js");
+const authMiddleware = require("../../common/middleware/authMiddleware.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -27,6 +30,33 @@ router.get(
   "/api/webtoons/:webtoonId/episodes",
   webtoonValidation.checkWebtoonId,
   episodeCtrl.process.getEpisode
+);
+router.post(
+  "/api/episodes/:episodeId/comments",
+  authMiddleware,
+  commentValidation.checkEpisodeIdParam,
+  commentValidation.checkAddComment,
+  commentCtrl.createComment
+);
+router.patch(
+  "/api/comments/:commentId",
+  authMiddleware,
+  commentValidation.checkCommentIdParam,
+  commentValidation.checkUpdateComment,
+  commentCtrl.updateComment
+);
+router.delete(
+  "/api/comments/:commentId",
+  authMiddleware,
+  commentValidation.checkCommentIdParam,
+  commentCtrl.deleteComment
+);
+router.put(
+  "/api/comments/:commentId/reaction",
+  authMiddleware,
+  commentValidation.checkCommentIdParam,
+  commentValidation.checkReactionType,
+  commentCtrl.reactComment
 );
 
 module.exports = router;
