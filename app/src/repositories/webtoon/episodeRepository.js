@@ -25,11 +25,11 @@ class EpisodeRepository {
   async getEpisodeDetailById(episodeId) {
     const query = `
         SELECT
-          e.id AS episodeId,
+          e.id AS episode_id,
           e.episode_no,
-          e.title AS episodeTitle,
+          e.title AS episode_title,
           e.full_img_url,
-          w.title AS webtoonTitle
+          w.title AS webtoon_title
         FROM episodes e
         JOIN webtoons w ON e.webtoon_id = w.id
         WHERE e.id = ?;

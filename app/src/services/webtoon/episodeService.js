@@ -28,7 +28,9 @@ class EpisodeService {
   async getEpisodeDetail(episodeId) {
     try {
       const episode = await this.episodeRepository.getEpisodeDetailById(episodeId);
-
+      if (!episode) {
+        throw new Error("해당 에피소드를 찾을 수 없습니다.");
+      }
       return {
         status: 200,
         success: true,
