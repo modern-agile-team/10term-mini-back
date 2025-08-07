@@ -1,6 +1,6 @@
 "use strict";
 
-const EpisodeService = require("../../services/webtoon/episodeService");
+const EpisodeService = require("@services/webtoon/episodeService");
 const episodeService = new EpisodeService();
 
 const process = {

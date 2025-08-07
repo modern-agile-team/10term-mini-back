@@ -1,6 +1,6 @@
 "use strict";
 
-const WebtoonRepository = require("../../repositories/webtoon/webtoonRepository");
+const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
 
 const DB_COLUMN = {
   favorite: "favorite_count",

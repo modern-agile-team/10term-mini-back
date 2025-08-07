@@ -1,5 +1,5 @@
-const pool = require("../../config/db");
-const toCamelCase = require("../../common/utils/toCamelCase.js");
+const pool = require("@config/db");
+const toCamelCase = require("@utils/toCamelCase.js");
 
 class WebtoonRepository {
   // 요일 기준 정렬 조회

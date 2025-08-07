@@ -10,11 +10,11 @@ const episodeCtrl = require("@routes/webtoon/episodeController.js");
 const commentCtrl = require("@routes/comment/commentController.js");
 
 // 미들웨어
-const authValidation = require("../../validation/auth/authValidation.js");
-const webtoonValidation = require("../../validation/webtoon/webtoonValidation.js");
-const episodeValidation = require("../../validation/webtoon/episodeValidation.js");
-const commentValidation = require("../../validation/comment/commentValidation.js");
-const authMiddleware = require("../../common/middleware/authMiddleware.js");
+const authValidation = require("@validation/auth/authValidation.js");
+const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
+const episodeValidation = require("@validation/webtoon/episodeValidation.js");
+const commentValidation = require("@validation/comment/commentValidation.js");
+const authMiddleware = require("@middleware/authMiddleware.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);

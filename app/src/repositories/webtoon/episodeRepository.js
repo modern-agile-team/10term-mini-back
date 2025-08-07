@@ -1,7 +1,7 @@
 "use strict";
 
-const pool = require("../../config/db");
-const toCamelCase = require("../../common/utils/toCamelCase.js");
+const pool = require("@config/db");
+const toCamelCase = require("@utils/toCamelCase.js");
 
 class EpisodeRepository {
   // 웹툰에 맞는 회차 불러오기

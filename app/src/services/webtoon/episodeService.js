@@ -1,6 +1,6 @@
 "use strict";
 
-const EpisodeRepository = require("../../repositories/webtoon/episodeRepository");
+const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
 
 class EpisodeService {
   constructor() {

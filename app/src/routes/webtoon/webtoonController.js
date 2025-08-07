@@ -1,6 +1,6 @@
 "use strict";
 
-const WebtoonService = require("../../services/webtoon/webtoonService");
+const WebtoonService = require("@services/webtoon/webtoonService");
 const webtoonService = new WebtoonService();
 
 const process = {

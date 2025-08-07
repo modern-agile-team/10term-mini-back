@@ -1,6 +1,7 @@
 "use strict";
 
 const { query, param, validationResult } = require("express-validator");
+const { createValidation } = require("@middleware/validationHelper.js");
 
 const checkWebtoonQuery = [
   query("day")
