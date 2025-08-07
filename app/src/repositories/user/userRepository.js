@@ -11,7 +11,7 @@ class UserRepository {
       WHERE username = ?;
     `;
     const [rows] = await pool.query(query, [username]);
-    return toCamelCase(rows[0]);
+    return rows[0];
   }
 
   async findByNickname(nickname) {
@@ -21,7 +21,7 @@ class UserRepository {
       WHERE nickname = ?;
     `;
     const [rows] = await pool.query(query, [nickname]);
-    return toCamelCase(rows[0]);
+    return rows[0];
   }
 
   async createUser({ username, password, nickname }) {
