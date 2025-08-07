@@ -2,7 +2,7 @@ const pool = require("../../config/db");
 const toCamelCase = require("../../common/utils/toCamelCase.js");
 
 class WebtoonRepository {
-  // 요일과 정렬조건을 기준으로 웹툰 데이터 조회
+  // 요일 기준 정렬 조회
   async getWebtoonsByDaySorted(day, sort) {
     let query;
     if (sort === "rating_avg") {
@@ -20,7 +20,7 @@ class WebtoonRepository {
         WHERE wd.day_of_week = ?
         GROUP BY wt.id
         ORDER BY average_rating DESC;
-        `;
+      `;
     } else {
       query = `
         SELECT 
@@ -33,7 +33,7 @@ class WebtoonRepository {
         JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
         WHERE wd.day_of_week = ?
         ORDER BY wt.${sort} DESC;
-        `;
+      `;
     }
     const [rows] = await pool.query(query, [day]);
     return toCamelCase(rows);
@@ -103,7 +103,7 @@ class WebtoonRepository {
       LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
       GROUP BY wt.id
       ORDER BY wt.favorite_count DESC;
-      `;
+    `;
     const [rows] = await pool.query(query);
     return toCamelCase(rows);
   }
@@ -125,7 +125,7 @@ class WebtoonRepository {
       LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
       WHERE wt.id = ?
       GROUP BY wt.id;
-      `;
+    `;
     const [rows] = await pool.query(query, [webtoonId]);
     return toCamelCase(rows[0]);
   }
