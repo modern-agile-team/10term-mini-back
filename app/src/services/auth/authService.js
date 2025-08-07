@@ -1,20 +1,17 @@
 "use strict";
 
-const UserRepository = require("../../repositories/user/userRepository");
-const JwtService = require("../../common/utils/jwtService");
+const UserRepository = require("@repositories/user/userRepository");
+const CustomError = require("@utils/customError");
+const JwtService = require("@utils/jwtService");
 const bcrypt = require("bcrypt");
 
 class AuthService {
-  constructor(req) {
-    this.req = req;
-    this.body = req.body;
+  constructor() {
     this.userRepository = new UserRepository();
     this.jwtService = new JwtService();
   }
 
-  async signUp() {
-    const { username, password, nickname } = this.body;
-
+  async signUp(username, password, nickname) {
     const conflictFields = [];
 
     const existsUsername = await this.userRepository.findByUsername(username);
@@ -24,11 +21,7 @@ class AuthService {
     if (existsNickname) conflictFields.push("nickname");
 
     if (conflictFields.length > 0) {
-      return {
-        success: false,
-        status: 409,
-        data: { field: conflictFields },
-      };
+      throw new CustomError("중복된 필드가 있습니다.", 409, conflictFields);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -50,40 +43,24 @@ class AuthService {
     });
 
     return {
-      status: 201,
-      success: true,
-      data: {
-        field: null,
-        message: "회원가입 성공",
-        accessToken,
-        refreshToken,
-        user: {
-          username: createdUser.username,
-          nickname: createdUser.nickname,
-        },
+      accessToken,
+      refreshToken,
+      user: {
+        username: createdUser.username,
+        nickname: createdUser.nickname,
       },
     };
   }
 
-  async login() {
-    const { username, password } = this.body;
-
+  async login(username, password) {
     const user = await this.userRepository.findByUsername(username);
     if (!user) {
-      return {
-        status: 401,
-        success: false,
-        data: { message: "존재하지 않는 유저입니다." },
-      };
+      throw new CustomError("존재하지 않는 유저입니다.", 401);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return {
-        status: 401,
-        success: false,
-        data: { message: "비밀번호가 일치하지 않습니다." },
-      };
+      throw new CustomError("비밀번호가 일치하지 않습니다.", 401);
     }
 
     const accessToken = this.jwtService.generateAccessToken({
@@ -97,37 +74,23 @@ class AuthService {
     });
 
     return {
-      status: 200,
-      success: true,
-      data: {
-        message: "로그인 성공",
-        accessToken,
-        refreshToken,
-        user: {
-          username: user.username,
-          nickname: user.nickname,
-        },
+      accessToken,
+      refreshToken,
+      user: {
+        username: user.username,
+        nickname: user.nickname,
       },
     };
   }
 
-  async issueAccessToken() {
-    const refreshToken = this.req.cookies?.refreshToken;
+  async issueAccessToken(refreshToken) {
     if (!refreshToken) {
-      return {
-        status: 400,
-        success: false,
-        data: { message: "refresh 토큰이 필요합니다." },
-      };
+      throw new CustomError("refresh 토큰이 필요합니다.", 400);
     }
 
     const decoded = this.jwtService.verifyRefreshToken(refreshToken);
     if (!decoded) {
-      return {
-        status: 401,
-        success: false,
-        data: { message: "유효하지 않은 토큰입니다." },
-      };
+      throw new CustomError("유효하지 않은 토큰입니다.", 401);
     }
 
     const accessToken = this.jwtService.generateAccessToken({
@@ -135,14 +98,7 @@ class AuthService {
       username: decoded.username,
     });
 
-    return {
-      status: 200,
-      success: true,
-      data: {
-        message: "access 토큰 재발급 성공",
-        accessToken,
-      },
-    };
+    return accessToken;
   }
 }
 

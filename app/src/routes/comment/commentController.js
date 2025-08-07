@@ -1,89 +1,66 @@
 "use strict";
 
-const CommentService = require("../../services/comment/commentService.js");
+const CommentService = require("@services/comment/commentService.js");
+const commentService = new CommentService();
 
 module.exports = {
-  createComment: async (req, res) => {
-    try {
-      const { episodeId } = req.params;
-      const { content, parentId } = req.body;
-      const userId = req.user.id;
+  createComment: async (req, res, next) => {
+    const { episodeId } = req.params;
+    const { content, parentId } = req.body;
+    const userId = req.user.id;
 
-      const commentService = new CommentService(req);
-      const { status, success, data } = await commentService.createComment(
-        episodeId,
-        content,
-        parentId,
-        userId
-      );
+    const newComment = await commentService.createComment(episodeId, content, parentId, userId);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("createComment error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(201).json({
+      success: true,
+      data: {
+        message: "댓글 작성 성공",
+        content: newComment,
+      },
+    });
   },
 
-  updateComment: async (req, res) => {
-    try {
-      const { commentId } = req.params;
-      const { content } = req.body;
-      const userId = req.user.id;
+  updateComment: async (req, res, next) => {
+    const { commentId } = req.params;
+    const { content } = req.body;
+    const userId = req.user.id;
 
-      const commentService = new CommentService(req);
-      const { status, success, data } = await commentService.updateComment(
-        commentId,
-        content,
-        userId
-      );
+    const updatedComment = await commentService.updateComment(commentId, content, userId);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("updateComment error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "댓글 수정 성공",
+        content: updatedComment,
+      },
+    });
   },
 
-  deleteComment: async (req, res) => {
-    try {
-      const { commentId } = req.params;
-      const userId = req.user.id;
+  deleteComment: async (req, res, next) => {
+    const { commentId } = req.params;
+    const userId = req.user.id;
 
-      const commentService = new CommentService(req);
-      const { status, success, data } = await commentService.deleteComment(commentId, userId);
+    await commentService.deleteComment(commentId, userId);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("deleteComment error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      data: { message: "댓글 삭제 성공" },
+    });
   },
 
-  reactComment: async (req, res) => {
-    try {
-      const { commentId } = req.params;
-      const { type } = req.body;
-      const userId = req.user.id;
+  reactComment: async (req, res, next) => {
+    const { commentId } = req.params;
+    const { type } = req.body;
+    const userId = req.user.id;
 
-      const commentService = new CommentService(req);
-      const { status, success, data } = await commentService.reactComment(commentId, type, userId);
+    const reactionData = await commentService.reactComment(commentId, type, userId);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("reactComment error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "댓글 반응 처리 완료",
+        content: reactionData,
+      },
+    });
   },
 };
