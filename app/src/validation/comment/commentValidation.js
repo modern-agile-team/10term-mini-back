@@ -18,10 +18,9 @@ const checkUpdateComment = createValidation(
 const checkReactionType = createValidation(
   body("type")
     .custom((value) => {
-      if (value === null) return true;
       return ["like", "dislike"].includes(value);
     })
-    .withMessage("type은 null이거나 'like', 'dislike' 중 하나여야 합니다.")
+    .withMessage("type은 'like' 또는 'dislike'만 허용됩니다.")
 );
 
 const checkCommentIdParam = createValidation(

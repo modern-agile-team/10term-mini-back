@@ -89,10 +89,11 @@ class CommentRepository {
       WHERE comment_id = ?;
     `;
     const [rows] = await pool.query(query, [commentId]);
+    const result = toCamelCase(rows[0]);
 
     return {
-      likeCount: Number(rows[0].likeCount) || 0,
-      dislikeCount: Number(rows[0].dislikeCount) || 0,
+      likeCount: Number(result.likeCount) || 0,
+      dislikeCount: Number(result.dislikeCount) || 0,
     };
   }
 }

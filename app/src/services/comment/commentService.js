@@ -64,24 +64,18 @@ class CommentService {
     const existingReaction = await this.commentRepository.findReaction(commentId, userId);
 
     let finalReaction = null;
-    if (type === null) {
-      if (existingReaction) {
+
+    if (existingReaction) {
+      if (existingReaction.reactionType === type) {
         await this.commentRepository.deleteReaction(commentId, userId);
         finalReaction = null;
-      }
-    } else {
-      if (existingReaction) {
-        if (existingReaction.reactionType === type) {
-          await this.commentRepository.deleteReaction(commentId, userId);
-          finalReaction = null;
-        } else {
-          await this.commentRepository.updateReaction(commentId, userId, type);
-          finalReaction = type;
-        }
       } else {
-        await this.commentRepository.createReaction(commentId, userId, type);
+        await this.commentRepository.updateReaction(commentId, userId, type);
         finalReaction = type;
       }
+    } else {
+      await this.commentRepository.createReaction(commentId, userId, type);
+      finalReaction = type;
     }
 
     const reactionCounts = await this.commentRepository.countReactions(commentId);
