@@ -1,77 +1,65 @@
 "use strict";
 
-const AuthService = require("../../services/auth/authService.js");
-const { setRefreshToken, clearRefreshToken } = require("../../common/utils/cookie.js");
+const AuthService = require("@services/auth/authService.js");
+const { setRefreshToken, clearRefreshToken } = require("@utils/cookie.js");
+const authService = new AuthService();
+function handleRefreshToken(res, data) {
+  if (data.refreshToken) {
+    setRefreshToken(res, data.refreshToken);
+    delete data.refreshToken;
+  }
+}
 
 module.exports = {
-  signUp: async (req, res) => {
-    try {
-      const authService = new AuthService(req);
-      const { status, success, data } = await authService.signUp();
+  signUp: async (req, res, next) => {
+    const { username, password, nickname } = req.body;
+    const data = await authService.signUp(username, password, nickname);
 
-      if (data.refreshToken) {
-        setRefreshToken(res, data.refreshToken);
-        delete data.refreshToken;
-      }
+    handleRefreshToken(res, data);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("signUp error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(201).json({
+      success: true,
+      data: {
+        message: "회원가입 성공",
+        content: data,
+      },
+    });
   },
 
-  login: async (req, res) => {
-    try {
-      const authService = new AuthService(req);
-      const { status, success, data } = await authService.login();
+  login: async (req, res, next) => {
+    const { username, password } = req.body;
+    const data = await authService.login(username, password);
 
-      if (data.refreshToken) {
-        setRefreshToken(res, data.refreshToken);
-        delete data.refreshToken;
-      }
+    handleRefreshToken(res, data);
 
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("login error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "로그인 성공",
+        content: data,
+      },
+    });
   },
 
-  issueAccessToken: async (req, res) => {
-    try {
-      const authService = new AuthService(req);
-      const { status, success, data } = await authService.issueAccessToken();
-      return res.status(status).json({ success, data });
-    } catch (error) {
-      console.error("issueAccessToken error:", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+  issueAccessToken: async (req, res, next) => {
+    const refreshToken = req.cookies.refreshToken;
+    const accessToken = await authService.issueAccessToken(refreshToken);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "access 토큰 발급 성공",
+        content: accessToken,
+      },
+    });
   },
 
-  logout: async (req, res) => {
-    try {
-      clearRefreshToken(res);
+  logout: async (req, res, next) => {
+    clearRefreshToken(res);
 
-      return res.status(200).json({
-        success: true,
-        data: { message: "로그아웃 되었습니다." },
-      });
-    } catch (error) {
-      console.error("logout error: ", error);
-      return res.status(500).json({
-        success: false,
-        data: { message: "서버 오류가 발생했습니다." },
-      });
-    }
+    return res.status(200).json({
+      success: true,
+      data: { message: "로그아웃 되었습니다." },
+    });
   },
 };

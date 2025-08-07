@@ -4,10 +4,10 @@ const express = require("express");
 const router = express.Router();
 
 // 컨트롤러
-const authCtrl = require("../auth/authController.js");
-const webtoonCtrl = require("../webtoon/webtoonController.js");
-const episodeCtrl = require("../webtoon/episodeController.js");
-const commentCtrl = require("../comment/commentController.js");
+const authCtrl = require("@routes/auth/authController.js");
+const webtoonCtrl = require("@routes/webtoon/webtoonController.js");
+const episodeCtrl = require("@routes/webtoon/episodeController.js");
+const commentCtrl = require("@routes/comment/commentController.js");
 
 // 미들웨어
 const authValidation = require("../../validation/auth/authValidation.js");

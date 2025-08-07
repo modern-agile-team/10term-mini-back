@@ -18,13 +18,24 @@
     "url": "https://github.com/modern-agile-team/10term-mini-back/issues"
   },
   "homepage": "https://github.com/modern-agile-team/10term-mini-back#readme",
+  "_moduleAliases": {
+    "@middleware": "src/common/middleware",
+    "@utils": "src/common/utils",
+    "@config": "src/config",
+    "@repositories": "src/repositories",
+    "@routes": "src/routes",
+    "@services": "src/services",
+    "@validation": "src/validation"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "mysql2": "^3.14.2",
     "nodemon": "^3.1.10"
   }
