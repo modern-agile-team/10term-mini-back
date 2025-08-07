@@ -1,129 +1,94 @@
 "use strict";
 
-const pool = require("../../config/db");
+const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
 
 class CommentRepository {
   async findById(commentId) {
-    const [rows] = await pool.query(
-      `
+    const query = `
       SELECT * 
       FROM comments 
       WHERE id = ?;
-      `,
-      [commentId]
-    );
+    `;
+    const [rows] = await pool.query(query, [commentId]);
     return toCamelCase(rows[0]);
   }
 
   async createComment({ episodeId, userId, content, parentId }) {
-    const [result] = await pool.query(
-      `
+    const query = `
       INSERT INTO comments (episode_id, user_id, content, parent_id) 
       VALUES (?, ?, ?, ?);
-      `,
-      [episodeId, userId, content, parentId]
-    );
+    `;
+    const [result] = await pool.query(query, [episodeId, userId, content, parentId]);
 
-    const [newRows] = await pool.query(
-      `
-        SELECT *
-        FROM comments
-        WHERE id = ?;
-        `,
-      [result.insertId]
-    );
-
-    return toCamelCase(newRows[0]);
+    const newComment = await this.findById(result.insertId);
+    return newComment;
   }
 
   async updateComment(commentId, { content }) {
-    await pool.query(
-      `
+    const query = `
       UPDATE comments
       SET content = ?
       WHERE id = ?;
-      `,
-      [content, commentId]
-    );
+    `;
+    await pool.query(query, [content, commentId]);
 
-    const [updateRows] = await pool.query(
-      `
-      SELECT *
-      FROM comments
-      WHERE id = ?;
-      `,
-      [commentId]
-    );
-
-    return toCamelCase(updateRows[0]);
+    const updatedComment = await this.findById(commentId);
+    return updatedComment;
   }
 
   async deleteComment(commentId) {
-    await pool.query(
-      `
+    const query = `
       DELETE FROM comments
       WHERE id = ?;
-      `,
-      [commentId]
-    );
+    `;
+    await pool.query(query, [commentId]);
   }
 
   async findReaction(commentId, userId) {
-    const [rows] = await pool.query(
-      `
+    const query = `
       SELECT * 
       FROM comment_reactions
       WHERE comment_id = ? AND user_id = ?;
-      `,
-      [commentId, userId]
-    );
-
+    `;
+    const [rows] = await pool.query(query, [commentId, userId]);
     return toCamelCase(rows[0]);
   }
 
   async createReaction(commentId, userId, type) {
-    await pool.query(
-      `
+    const query = `
       INSERT INTO comment_reactions (comment_id, user_id, reaction_type)
       VALUES (?, ?, ?);
-      `,
-      [commentId, userId, type]
-    );
+    `;
+    await pool.query(query, [commentId, userId, type]);
   }
 
   async updateReaction(commentId, userId, type) {
-    await pool.query(
-      `
+    const query = `
       UPDATE comment_reactions
       SET reaction_type = ?, updated_at = CURRENT_TIMESTAMP
       WHERE comment_id = ? AND user_id = ?;
-      `,
-      [type, commentId, userId]
-    );
+    `;
+    await pool.query(query, [type, commentId, userId]);
   }
 
   async deleteReaction(commentId, userId) {
-    await pool.query(
-      `
+    const query = `
       DELETE FROM comment_reactions
       WHERE comment_id = ? AND user_id = ?;
-      `,
-      [commentId, userId]
-    );
+    `;
+    await pool.query(query, [commentId, userId]);
   }
 
   async countReactions(commentId) {
-    const [rows] = await pool.query(
-      `
+    const query = `
       SELECT 
-        SUM(reaction_type = 'like') AS likeCount,
-        SUM(reaction_type = 'dislike') AS dislikeCount
+        SUM(reaction_type = 'like') AS like_count,
+        SUM(reaction_type = 'dislike') AS dislike_count
       FROM comment_reactions
       WHERE comment_id = ?;
-      `,
-      [commentId]
-    );
+    `;
+    const [rows] = await pool.query(query, [commentId]);
 
     return {
       likeCount: Number(rows[0].likeCount) || 0,
