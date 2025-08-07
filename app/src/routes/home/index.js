@@ -12,6 +12,7 @@ const commentCtrl = require("../comment/commentController.js");
 // 미들웨어
 const authValidation = require("../../validation/auth/authValidation.js");
 const webtoonValidation = require("../../validation/webtoon/webtoonValidation.js");
+const episodeValidation = require("../../validation/webtoon/episodeValidation.js");
 const commentValidation = require("../../validation/comment/commentValidation.js");
 const authMiddleware = require("../../common/middleware/authMiddleware.js");
 
@@ -29,7 +30,12 @@ router.get(
 router.get(
   "/api/webtoons/:webtoonId/episodes",
   webtoonValidation.checkWebtoonId,
-  episodeCtrl.process.getEpisode
+  episodeCtrl.process.getWebtoonEpisodes
+);
+router.get(
+  "/api/episodes/:episodeId",
+  episodeValidation.checkEpisodeId,
+  episodeCtrl.process.getEpisodeDetail
 );
 router.post(
   "/api/episodes/:episodeId/comments",
