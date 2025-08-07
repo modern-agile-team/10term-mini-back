@@ -2,17 +2,20 @@
 
 const AuthService = require("@services/auth/authService.js");
 const { setRefreshToken, clearRefreshToken } = require("@utils/cookie.js");
+const authService = new AuthService();
+function handleRefreshToken(res, data) {
+  if (data.refreshToken) {
+    setRefreshToken(res, data.refreshToken);
+    delete data.refreshToken;
+  }
+}
 
 module.exports = {
   signUp: async (req, res, next) => {
     const { username, password, nickname } = req.body;
-    const authService = new AuthService();
     const data = await authService.signUp(username, password, nickname);
 
-    if (data.refreshToken) {
-      setRefreshToken(res, data.refreshToken);
-      delete data.refreshToken;
-    }
+    handleRefreshToken(res, data);
 
     return res.status(201).json({
       success: true,
@@ -25,13 +28,9 @@ module.exports = {
 
   login: async (req, res, next) => {
     const { username, password } = req.body;
-    const authService = new AuthService();
     const data = await authService.login(username, password);
 
-    if (data.refreshToken) {
-      setRefreshToken(res, data.refreshToken);
-      delete data.refreshToken;
-    }
+    handleRefreshToken(res, data);
 
     return res.status(200).json({
       success: true,
@@ -44,7 +43,6 @@ module.exports = {
 
   issueAccessToken: async (req, res, next) => {
     const refreshToken = req.cookies.refreshToken;
-    const authService = new AuthService();
     const accessToken = await authService.issueAccessToken(refreshToken);
 
     return res.status(200).json({

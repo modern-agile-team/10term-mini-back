@@ -53,8 +53,6 @@ class CommentService {
     }
 
     await this.commentRepository.deleteComment(commentId);
-
-    return true;
   }
 
   async reactComment(commentId, type, userId) {
@@ -66,7 +64,6 @@ class CommentService {
     const existingReaction = await this.commentRepository.findReaction(commentId, userId);
 
     let finalReaction = null;
-
     if (type === null) {
       if (existingReaction) {
         await this.commentRepository.deleteReaction(commentId, userId);
@@ -74,16 +71,16 @@ class CommentService {
       }
     } else {
       if (existingReaction) {
-        if (existingReaction.type === type) {
+        if (existingReaction.reactionType === type) {
           await this.commentRepository.deleteReaction(commentId, userId);
           finalReaction = null;
         } else {
           await this.commentRepository.updateReaction(commentId, userId, type);
-          finalReaction = { type };
+          finalReaction = type;
         }
       } else {
         await this.commentRepository.createReaction(commentId, userId, type);
-        finalReaction = { type };
+        finalReaction = type;
       }
     }
 
@@ -91,7 +88,7 @@ class CommentService {
 
     return {
       reactions: reactionCounts,
-      myReaction: finalReaction ? finalReaction.type : null,
+      myReaction: finalReaction ? finalReaction : null,
     };
   }
 }

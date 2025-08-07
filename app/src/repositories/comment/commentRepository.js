@@ -73,18 +73,19 @@ class CommentRepository {
     const [rows] = await pool.query(
       `
       SELECT * 
-      FROM comment_likes
+      FROM comment_reactions
       WHERE comment_id = ? AND user_id = ?;
       `,
       [commentId, userId]
     );
+
     return toCamelCase(rows[0]);
   }
 
   async createReaction(commentId, userId, type) {
     await pool.query(
       `
-      INSERT INTO comment_likes (comment_id, user_id, reaction_type)
+      INSERT INTO comment_reactions (comment_id, user_id, reaction_type)
       VALUES (?, ?, ?);
       `,
       [commentId, userId, type]
@@ -94,7 +95,7 @@ class CommentRepository {
   async updateReaction(commentId, userId, type) {
     await pool.query(
       `
-      UPDATE comment_likes
+      UPDATE comment_reactions
       SET reaction_type = ?, updated_at = CURRENT_TIMESTAMP
       WHERE comment_id = ? AND user_id = ?;
       `,
@@ -105,7 +106,7 @@ class CommentRepository {
   async deleteReaction(commentId, userId) {
     await pool.query(
       `
-      DELETE FROM comment_likes
+      DELETE FROM comment_reactions
       WHERE comment_id = ? AND user_id = ?;
       `,
       [commentId, userId]
@@ -118,7 +119,7 @@ class CommentRepository {
       SELECT 
         SUM(reaction_type = 'like') AS likeCount,
         SUM(reaction_type = 'dislike') AS dislikeCount
-      FROM comment_likes
+      FROM comment_reactions
       WHERE comment_id = ?;
       `,
       [commentId]

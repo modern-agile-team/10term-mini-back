@@ -1,6 +1,7 @@
 "use strict";
 
 const CommentService = require("@services/comment/commentService.js");
+const commentService = new CommentService();
 
 module.exports = {
   createComment: async (req, res, next) => {
@@ -8,7 +9,6 @@ module.exports = {
     const { content, parentId } = req.body;
     const userId = req.user.id;
 
-    const commentService = new CommentService();
     const newComment = await commentService.createComment(episodeId, content, parentId, userId);
 
     return res.status(201).json({
@@ -25,7 +25,6 @@ module.exports = {
     const { content } = req.body;
     const userId = req.user.id;
 
-    const commentService = new CommentService();
     const updatedComment = await commentService.updateComment(commentId, content, userId);
 
     return res.status(200).json({
@@ -41,7 +40,6 @@ module.exports = {
     const { commentId } = req.params;
     const userId = req.user.id;
 
-    const commentService = new CommentService();
     await commentService.deleteComment(commentId, userId);
 
     return res.status(200).json({
@@ -55,7 +53,6 @@ module.exports = {
     const { type } = req.body;
     const userId = req.user.id;
 
-    const commentService = new CommentService();
     const reactionData = await commentService.reactComment(commentId, type, userId);
 
     return res.status(200).json({
