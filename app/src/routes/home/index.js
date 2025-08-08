@@ -26,12 +26,12 @@ router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoon
 router.get(
   "/api/webtoons/:webtoonId/episodes",
   webtoonValidation.checkWebtoonId,
-  episodeCtrl.process.getWebtoonEpisodes
+  episodeCtrl.getWebtoonEpisodes
 );
 router.get(
   "/api/episodes/:episodeId",
   episodeValidation.checkEpisodeId,
-  episodeCtrl.process.getEpisodeDetail
+  episodeCtrl.getEpisodeDetail
 );
 router.post(
   "/api/episodes/:episodeId/comments",
