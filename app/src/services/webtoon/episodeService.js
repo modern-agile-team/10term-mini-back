@@ -25,6 +25,7 @@ class EpisodeService {
       };
     }
   }
+  
   async getEpisodeDetail(episodeId) {
     try {
       const episode = await this.episodeRepository.getEpisodeDetailById(episodeId);
