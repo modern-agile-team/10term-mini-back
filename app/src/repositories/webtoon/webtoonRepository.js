@@ -27,11 +27,14 @@ class WebtoonRepository {
           wt.id,
           wt.title,
           wd.day_of_week AS weekdays,
-          wt.thumbnail_url
+          wt.thumbnail_url,
+          ROUND(IFNULL(AVG(ep.rating_avg), 0), 2) AS average_rating
         FROM webtoons AS wt
         JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
         JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
+        LEFT JOIN episodes AS ep ON wt.id = ep.webtoon_id
         WHERE wd.day_of_week = ?
+        GROUP BY wt.id
         ORDER BY wt.${sort} DESC;
       `;
     }
