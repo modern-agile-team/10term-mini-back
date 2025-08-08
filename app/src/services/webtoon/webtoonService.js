@@ -1,6 +1,7 @@
 "use strict";
 
 const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
+const CustomError = require("@utils/customError");
 
 const DB_COLUMN = {
   favorite: "favorite_count",
@@ -14,40 +15,25 @@ class WebtoonService {
     this.webtoonRepository = new WebtoonRepository();
   }
 
-  async getWebtoons(filters) {
-    const { day, sort } = filters;
-
-    const dbSortKey = DB_COLUMN[sort];
+  async getWebtoons({ day, sort }) {
+    const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
 
     let webtoons;
 
     if (day) {
-      if (dbSortKey) {
-        webtoons = await this.webtoonRepository.getWebtoonsByDaySorted(day, dbSortKey);
-      } else {
-        webtoons = await this.webtoonRepository.getWebtoonsByDay(day);
-      }
-    } else if (dbSortKey) {
-      webtoons = await this.webtoonRepository.getAllWebtoonsSorted(dbSortKey);
+      webtoons = await this.webtoonRepository.getWebtoonsByDaySorted(day, dbSortKey);
     } else {
-      webtoons = await this.webtoonRepository.getAllWebtoons();
+      webtoons = await this.webtoonRepository.getAllWebtoonsSorted(dbSortKey);
     }
-
-    return {
-      status: 200,
-      success: true,
-      data: { webtoons },
-    };
+    return webtoons;
   }
 
   async getWebtoonDetail(webtoonId) {
     const detail = await this.webtoonRepository.getWebtoonById(webtoonId);
-
-    return {
-      status: 200,
-      success: true,
-      data: { detail },
-    };
+    if (!detail) {
+      throw new CustomError("웹툰을 찾을 수 없습니다.", 404);
+    }
+    return detail;
   }
 }
 

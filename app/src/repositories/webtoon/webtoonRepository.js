@@ -38,23 +38,6 @@ class WebtoonRepository {
     const [rows] = await pool.query(query, [day]);
     return toCamelCase(rows);
   }
-  // 요일 기준 조회
-  async getWebtoonsByDay(day) {
-    const query = `
-      SELECT 
-        wt.id, 
-        wt.title, 
-        wd.day_of_week AS weekdays, 
-        wt.thumbnail_url
-      FROM webtoons AS wt
-      JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-      JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-      WHERE wd.day_of_week = ? 
-      ORDER BY wt.favorite_count DESC;
-    `;
-    const [rows] = await pool.query(query, [day]);
-    return toCamelCase(rows);
-  }
   // 정렬 조건 기준 전체 조회
   async getAllWebtoonsSorted(sort) {
     let query;
@@ -87,23 +70,6 @@ class WebtoonRepository {
       ORDER BY wt.${sort} DESC;
     `;
     }
-    const [rows] = await pool.query(query);
-    return toCamelCase(rows);
-  }
-  // 전체 웹툰 조회
-  async getAllWebtoons() {
-    const query = `
-      SELECT 
-        wt.id, 
-        wt.title, 
-        JSON_ARRAYAGG(wd.day_of_week) AS weekdays,
-        wt.thumbnail_url
-      FROM webtoons AS wt
-      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-      GROUP BY wt.id
-      ORDER BY wt.favorite_count DESC;
-    `;
     const [rows] = await pool.query(query);
     return toCamelCase(rows);
   }
