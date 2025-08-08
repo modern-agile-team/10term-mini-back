@@ -63,4 +63,16 @@ module.exports = {
       },
     });
   },
+
+  getCommentsByEpisode: async (req, res, next) => {
+    const { episodeId } = req.params;
+    const comments = await commentService.getCommentsByEpisode(episodeId);
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "댓글 목록 조회 성공",
+        content: comments,
+      },
+    });
+  },
 };

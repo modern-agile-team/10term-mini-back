@@ -2,13 +2,20 @@
 
 const CommentRepository = require("@repositories/comment/commentRepository.js");
 const CustomError = require("@utils/customError");
+const EpisodeRepository = require("@repositories/webtoon/episodeRepository.js");
 
 class CommentService {
   constructor() {
     this.commentRepository = new CommentRepository();
+    this.episodeRepository = new EpisodeRepository();
   }
 
   async createComment(episodeId, content, parentId, userId) {
+    const existingEpisode = await this.episodeRepository.getEpisodeDetailById(episodeId);
+    if (!existingEpisode) {
+      throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
+    }
+
     if (parentId) {
       const parentComment = await this.commentRepository.findById(parentId);
       if (!parentComment) {
@@ -85,5 +92,38 @@ class CommentService {
       myReaction: finalReaction ? finalReaction : null,
     };
   }
+
+  async getCommentsByEpisode(episodeId) {
+    const existingEpisode = await this.episodeRepository.getEpisodeDetailById(episodeId);
+    if (!existingEpisode) {
+      throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
+    }
+
+    const comments = await this.commentRepository.getCommentsByEpisode(episodeId);
+
+    const map = {};
+    const roots = [];
+
+    comments.forEach((comment) => {
+      if (!comment.parentId) {
+        comment.children = [];
+      }
+      map[comment.id] = comment;
+    });
+
+    comments.forEach((comment) => {
+      if (comment.parentId) {
+        const parent = map[comment.parentId];
+        if (parent) {
+          parent.children.push(comment);
+        }
+      } else {
+        roots.push(comment);
+      }
+    });
+
+    return roots;
+  }
 }
+
 module.exports = CommentService;
