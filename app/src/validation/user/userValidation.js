@@ -25,16 +25,16 @@ const checkPasswordUpdate = createValidation(
     .notEmpty()
     .withMessage("현재 비밀번호를 입력해주세요.")
     .isLength({ min: 8, max: 20 })
-    .withMessage("비밀번호는 8 ~ 20 글자여야 합니다.")
+    .withMessage("현재 비밀번호는 8 ~ 20 글자여야 합니다.")
     .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}\[\]:;"'<>,.?/\\|])/)
-    .withMessage("비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 합니다."),
+    .withMessage("현재 비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 합니다."),
   body("newPassword")
     .notEmpty()
     .withMessage("새 비밀번호를 입력해주세요.")
     .isLength({ min: 8, max: 20 })
-    .withMessage("비밀번호는 8 ~ 20 글자여야 합니다.")
+    .withMessage("새 비밀번호는 8 ~ 20 글자여야 합니다.")
     .matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}\[\]:;"'<>,.?/\\|])/)
-    .withMessage("비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 합니다.")
+    .withMessage("새 비밀번호는 영문, 숫자, 특수문자를 각각 1자 이상 포함해야 합니다.")
 );
 
 const checkNicknameParam = createValidation(
