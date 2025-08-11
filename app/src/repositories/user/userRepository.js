@@ -4,6 +4,16 @@ const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
 
 class UserRepository {
+  async findById(userId) {
+    const query = `
+      SELECT *
+      FROM users
+      WHERE id = ?;
+    `;
+    const [rows] = await pool.query(query, [userId]);
+    return rows.length ? toCamelCase(rows[0]) : null;
+  }
+
   async findByUsername(username) {
     const query = `
       SELECT * 
@@ -31,8 +41,28 @@ class UserRepository {
     `;
     const [result] = await pool.query(query, [username, password, nickname]);
 
-    const user = await this.findByUsername(username);
-    return user;
+    const userId = result.insertId;
+    return await this.findById(userId);
+  }
+
+  async updateNickname(userId, newNickname) {
+    const query = `
+    UPDATE users
+    SET nickname = ?
+    WHERE id = ?;
+  `;
+    const [result] = await pool.query(query, [newNickname, userId]);
+    return result.affectedRows === 1;
+  }
+
+  async updatePassword(userId, hashedPassword) {
+    const query = `
+    UPDATE users
+    SET password = ?
+    WHERE id = ?;
+  `;
+    const [result] = await pool.query(query, [hashedPassword, userId]);
+    return result.affectedRows === 1;
   }
 }
 

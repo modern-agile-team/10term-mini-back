@@ -12,6 +12,7 @@ class EpisodeService {
     const episodes = await this.episodeRepository.getEpisodesByWebtoonId(webtoonId);
     return episodes;
   }
+  
   async getEpisodeDetail(episodeId) {
     const episode = await this.episodeRepository.getEpisodeDetailById(episodeId);
     if (!episode) {

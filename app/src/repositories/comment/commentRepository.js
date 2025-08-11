@@ -96,6 +96,17 @@ class CommentRepository {
       dislikeCount: Number(result.dislikeCount) || 0,
     };
   }
+
+  async getCommentsByEpisode(episodeId) {
+    const query = `
+      SELECT *
+      FROM comments
+      WHERE episode_id = ?
+      ORDER BY created_at ASC;
+    `;
+    const [rows] = await pool.query(query, [episodeId]);
+    return toCamelCase(rows);
+  }
 }
 
 module.exports = CommentRepository;
