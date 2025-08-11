@@ -99,13 +99,13 @@ class CommentRepository {
 
   async getCommentsByEpisode(episodeId) {
     const query = `
-    SELECT *
-    FROM comments
-    WHERE episode_id = ?
-    ORDER BY created_at ASC;
+      SELECT *
+      FROM comments
+      WHERE episode_id = ?
+      ORDER BY created_at ASC;
     `;
     const [rows] = await pool.query(query, [episodeId]);
-    return rows.map(toCamelCase);
+    return toCamelCase(rows);
   }
 }
 
