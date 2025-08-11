@@ -5,7 +5,7 @@ const webtoonService = new WebtoonService();
 
 module.exports = {
   // 웹툰 조회
-  getWebtoons: async (req, res, next) => {
+  getWebtoons: async (req, res) => {
     const filters = req.query;
     const webtoons = await webtoonService.getWebtoons(filters);
 
@@ -18,7 +18,7 @@ module.exports = {
     });
   },
   // 웹툰 상세내용 조회
-  getDetail: async (req, res, next) => {
+  getDetail: async (req, res) => {
     const webtoonId = req.params.webtoonId;
     const detail = await webtoonService.getWebtoonDetail(webtoonId);
     return res.status(200).json({

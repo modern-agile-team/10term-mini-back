@@ -5,7 +5,7 @@ const episodeService = new EpisodeService();
 
 module.exports = {
   // 웹툰 회차정보 조회
-  getWebtoonEpisodes: async (req, res, next) => {
+  getWebtoonEpisodes: async (req, res) => {
     const webtoonId = req.params.webtoonId;
     const episodes = await episodeService.getWebtoonEpisodes(webtoonId);
 
@@ -18,7 +18,7 @@ module.exports = {
     });
   },
   // 회차 상세 정보 조회
-  getEpisodeDetail: async (req, res, next) => {
+  getEpisodeDetail: async (req, res) => {
     const episodeId = req.params.episodeId;
     const episodeDetail = await episodeService.getEpisodeDetail(episodeId);
 
