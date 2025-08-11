@@ -8,13 +8,15 @@ const authCtrl = require("@routes/auth/authController.js");
 const webtoonCtrl = require("@routes/webtoon/webtoonController.js");
 const episodeCtrl = require("@routes/webtoon/episodeController.js");
 const commentCtrl = require("@routes/comment/commentController.js");
+const userCtrl = require("@routes/user/userController.js");
 
 // 미들웨어
-const authValidation = require("../../validation/auth/authValidation.js");
-const webtoonValidation = require("../../validation/webtoon/webtoonValidation.js");
-const episodeValidation = require("../../validation/webtoon/episodeValidation.js");
-const commentValidation = require("../../validation/comment/commentValidation.js");
-const authMiddleware = require("../../common/middleware/authMiddleware.js");
+const authValidation = require("@validation/auth/authValidation.js");
+const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
+const episodeValidation = require("@validation/webtoon/episodeValidation.js");
+const commentValidation = require("@validation/comment/commentValidation.js");
+const userValidation = require("@validation/user/userValidation.js");
+const authMiddleware = require("@middleware/authMiddleware.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -70,4 +72,22 @@ router.get(
   commentCtrl.getCommentsByEpisode
 );
 
+router.get("/api/users/me", authMiddleware, userCtrl.getMyInfo);
+router.patch(
+  "/api/users/me/nickname",
+  authMiddleware,
+  userValidation.checkNicknameUpdate,
+  userCtrl.updateNickname
+);
+router.get(
+  "/api/users/nicknames/:nickname",
+  userValidation.checkNicknameParam,
+  userCtrl.checkNicknameDuplicate
+);
+router.patch(
+  "/api/users/me/password",
+  authMiddleware,
+  userValidation.checkPasswordUpdate,
+  userCtrl.updatePassword
+);
 module.exports = router;
