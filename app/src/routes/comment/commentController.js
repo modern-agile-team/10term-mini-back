@@ -4,7 +4,7 @@ const CommentService = require("@services/comment/commentService.js");
 const commentService = new CommentService();
 
 module.exports = {
-  createComment: async (req, res, next) => {
+  createComment: async (req, res) => {
     const { episodeId } = req.params;
     const { content, parentId } = req.body;
     const userId = req.user.id;
@@ -20,7 +20,7 @@ module.exports = {
     });
   },
 
-  updateComment: async (req, res, next) => {
+  updateComment: async (req, res) => {
     const { commentId } = req.params;
     const { content } = req.body;
     const userId = req.user.id;
@@ -36,7 +36,7 @@ module.exports = {
     });
   },
 
-  deleteComment: async (req, res, next) => {
+  deleteComment: async (req, res) => {
     const { commentId } = req.params;
     const userId = req.user.id;
 
@@ -48,7 +48,7 @@ module.exports = {
     });
   },
 
-  reactComment: async (req, res, next) => {
+  reactComment: async (req, res) => {
     const { commentId } = req.params;
     const { type } = req.body;
     const userId = req.user.id;
@@ -60,6 +60,18 @@ module.exports = {
       data: {
         message: "댓글 반응 처리 완료",
         content: reactionData,
+      },
+    });
+  },
+
+  getCommentsByEpisode: async (req, res) => {
+    const { episodeId } = req.params;
+    const comments = await commentService.getCommentsByEpisode(episodeId);
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "댓글 목록 조회 성공",
+        content: comments,
       },
     });
   },

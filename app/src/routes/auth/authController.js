@@ -11,7 +11,7 @@ function handleRefreshToken(res, data) {
 }
 
 module.exports = {
-  signUp: async (req, res, next) => {
+  signUp: async (req, res) => {
     const { username, password, nickname } = req.body;
     const data = await authService.signUp(username, password, nickname);
 
@@ -26,7 +26,7 @@ module.exports = {
     });
   },
 
-  login: async (req, res, next) => {
+  login: async (req, res) => {
     const { username, password } = req.body;
     const data = await authService.login(username, password);
 
@@ -41,7 +41,7 @@ module.exports = {
     });
   },
 
-  issueAccessToken: async (req, res, next) => {
+  issueAccessToken: async (req, res) => {
     const refreshToken = req.cookies.refreshToken;
     const accessToken = await authService.issueAccessToken(refreshToken);
 
@@ -54,7 +54,7 @@ module.exports = {
     });
   },
 
-  logout: async (req, res, next) => {
+  logout: async (req, res) => {
     clearRefreshToken(res);
 
     return res.status(200).json({

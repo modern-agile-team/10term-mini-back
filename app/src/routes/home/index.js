@@ -64,5 +64,10 @@ router.put(
   commentValidation.checkReactionType,
   commentCtrl.reactComment
 );
+router.get(
+  "/api/episodes/:episodeId/comments",
+  commentValidation.checkEpisodeIdParam,
+  commentCtrl.getCommentsByEpisode
+);
 
 module.exports = router;
