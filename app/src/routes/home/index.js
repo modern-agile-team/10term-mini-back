@@ -32,7 +32,7 @@ router.get(
 );
 router.get(
   "/api/episodes/:episodeId",
-  episodeValidation.checkEpisodeId,
+  episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
 );
 router.post(
@@ -41,6 +41,13 @@ router.post(
   commentValidation.checkEpisodeIdParam,
   commentValidation.checkAddComment,
   commentCtrl.createComment
+);
+router.post(
+  "/api/episodes/:episodeId/ratings",
+  authMiddleware,
+  episodeValidation.checkEpisodeIdParam,
+  episodeValidation.checkRating,
+  episodeCtrl.rateEpisode
 );
 router.patch(
   "/api/comments/:commentId",

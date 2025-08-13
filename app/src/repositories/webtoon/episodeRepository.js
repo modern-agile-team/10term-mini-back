@@ -38,6 +38,29 @@ class EpisodeRepository {
     const [rows] = await pool.query(query, [episodeId]);
     return toCamelCase(rows[0]);
   }
+
+  // 별점 등록
+  async createRating(conn, userId, episodeId, rating) {
+    const query = `
+      INSERT INTO ratings (user_id, episode_id, rating)
+      VALUES (?, ?, ?);
+    `;
+    const [res] = await conn.query(query, [userId, episodeId, rating]);
+    return res;
+  }
+
+  async applyNewRating(conn, episodeId, rating) {
+    const query = `
+      UPDATE episodes
+      SET
+        rating_sum = rating_sum + ?,
+        rating_count = rating_count + 1,
+        rating_avg = ROUND((rating_sum) / (rating_count), 2)
+      WHERE id = ?;
+    `;
+    const [res] = await conn.query(query, [rating, rating, episodeId]);
+    return res;
+  }
 }
 
 module.exports = EpisodeRepository;
