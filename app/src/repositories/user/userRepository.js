@@ -68,7 +68,7 @@ class UserRepository {
 
   async findFavoritesByUserId(userId, sort) {
     const allowedSorts = {
-      recent: "ws.created_at DESC",
+      recent: "wf.created_at DESC",
       updated: "w.updated_at DESC",
     };
 
@@ -76,15 +76,15 @@ class UserRepository {
 
     const query = `
       SELECT
-        ws.webtoon_id,
+        wf.webtoon_id,
         w.title,
         w.writer,
         w.thumbnail_url,
         w.updated_at,
-        ws.created_at
-      FROM webtoon_favorites ws
-      JOIN webtoons w ON ws.webtoon_id = w.id
-      WHERE ws.user_id = ?
+        wf.created_at
+      FROM webtoon_favorites wf
+      JOIN webtoons w ON wf.webtoon_id = w.id
+      WHERE wf.user_id = ?
       ORDER BY ${orderBy};
     `;
 
@@ -100,9 +100,9 @@ class UserRepository {
     const placeholders = webtoonIds.map(() => "?").join(",");
 
     const query = `
-    DELETE FROM webtoon_favorites
-    WHERE user_id = ? AND webtoon_id IN (${placeholders});
-  `;
+      DELETE FROM webtoon_favorites
+      WHERE user_id = ? AND webtoon_id IN (${placeholders});
+    `;
     const params = [userId, ...webtoonIds];
     const [result] = await pool.query(query, params);
     const deletedCount = result.affectedRows || 0;
