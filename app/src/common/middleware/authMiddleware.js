@@ -19,5 +19,25 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
   }
 };
+const authOptional = (req, res, next) => {
+  const bearerToken = req.headers.authorization;
 
-module.exports = authMiddleware;
+  if (!bearerToken || !bearerToken.startsWith("Bearer ")) {
+    req.user = null;
+    return next();
+  }
+
+  const authToken = bearerToken.split(" ")[1];
+
+  try {
+    const userPayload = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
+    const { id } = userPayload;
+    req.user = { id };
+    return next();
+  } catch (error) {
+    req.user = null;
+    return next();
+  }
+};
+
+module.exports = { authMiddleware, authOptional };

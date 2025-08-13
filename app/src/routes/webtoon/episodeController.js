@@ -20,7 +20,8 @@ module.exports = {
   // 회차 상세 정보 조회
   getEpisodeDetail: async (req, res) => {
     const { episodeId } = req.params;
-    const episodeDetail = await episodeService.getEpisodeDetail(episodeId);
+    const userId = req.user?.id ?? null;
+    const episodeDetail = await episodeService.getEpisodeDetail(episodeId, userId);
 
     return res.status(200).json({
       success: true,

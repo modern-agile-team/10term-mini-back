@@ -16,7 +16,7 @@ const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
 const episodeValidation = require("@validation/webtoon/episodeValidation.js");
 const commentValidation = require("@validation/comment/commentValidation.js");
 const userValidation = require("@validation/user/userValidation.js");
-const authMiddleware = require("@middleware/authMiddleware.js");
+const { authMiddleware, authOptional } = require("@middleware/authMiddleware.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -32,6 +32,7 @@ router.get(
 );
 router.get(
   "/api/episodes/:episodeId",
+  authOptional,
   episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
 );

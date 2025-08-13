@@ -23,19 +23,46 @@ class EpisodeRepository {
   }
 
   // 회차클릭 후 만화 불러오기
-  async getEpisodeDetailById(episodeId) {
-    const query = `
+  async getEpisodeDetailById(episodeId, userId) {
+    let query, params;
+    if (!userId) {
+      // 비로그인
+      query = `
         SELECT
           ep.id AS episode_id,
           ep.episode_no,
           ep.title AS episode_title,
           ep.full_img_url,
-          wt.title AS webtoon_title
+          wt.title AS webtoon_title,
+          NULL AS hasRated,
+          NULL AS myRating
         FROM episodes ep
         JOIN webtoons wt ON ep.webtoon_id = wt.id
-        WHERE ep.id = ?;
+        WHERE ep.id = ?
+        LIMIT 1;
       `;
-    const [rows] = await pool.query(query, [episodeId]);
+      params = [episodeId];
+    } else {
+      // 로그인
+      query = `
+      SELECT
+        ep.id AS episode_id,
+        ep.episode_no,
+        ep.title AS episode_title,
+        ep.full_img_url,
+        wt.title AS webtoon_title,
+        (ra.id IS NOT NULL) AS hasRated,
+        ra.rating AS myRating
+      FROM episodes ep
+      JOIN webtoons wt ON ep.webtoon_id = wt.id
+      LEFT JOIN ratings ra
+        ON ra.episode_id = ep.id AND ra.user_id = ?
+      WHERE ep.id = ?
+      LIMIT 1;
+    `;
+      params = [userId, episodeId];
+    }
+    const [rows] = await pool.query(query, params);
     return toCamelCase(rows[0]);
   }
 
@@ -58,7 +85,7 @@ class EpisodeRepository {
         rating_avg = ROUND((rating_sum) / (rating_count), 2)
       WHERE id = ?;
     `;
-    const [res] = await conn.query(query, [rating, rating, episodeId]);
+    const [res] = await conn.query(query, [rating, episodeId]);
     return res;
   }
 }

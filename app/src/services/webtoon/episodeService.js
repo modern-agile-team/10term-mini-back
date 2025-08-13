@@ -14,17 +14,20 @@ class EpisodeService {
     return episodes;
   }
 
-  async getEpisodeDetail(episodeId) {
-    const episode = await this.episodeRepository.getEpisodeDetailById(episodeId);
+  async getEpisodeDetail(episodeId, userId) {
+    const episode = await this.episodeRepository.getEpisodeDetailById(episodeId, userId);
     if (!episode) {
       throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
+    }
+    if (episode.hasRated !== undefined && episode.hasRated !== null) {
+      episode.hasRated = !!episode.hasRated;
     }
     return episode;
   }
 
   async rateEpisode(userId, episodeId, rating) {
-    const connection = await pool.getConnection();
     try {
+      const connection = await pool.getConnection();
       await connection.beginTransaction();
 
       const insertRes = await this.episodeRepository.createRating(
@@ -34,10 +37,13 @@ class EpisodeService {
         rating
       );
       const updateRes = await this.episodeRepository.applyNewRating(connection, episodeId, rating);
+
       if (updateRes.affectedRows === 0) {
         throw new CustomError("존재하지 않는 에피소드입니다.", 404);
       }
+
       await connection.commit();
+
       return insertRes;
     } catch (err) {
       if (connection) {
