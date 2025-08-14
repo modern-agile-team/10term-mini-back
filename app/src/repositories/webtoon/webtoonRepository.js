@@ -98,6 +98,41 @@ class WebtoonRepository {
     const [rows] = await pool.query(query, [webtoonId]);
     return toCamelCase(rows[0]);
   }
+
+  async findFavorite(userId, webtoonId) {
+    const query = `
+      SELECT *
+      FROM webtoon_favorites
+      WHERE user_id = ? AND webtoon_id = ?;
+    `;
+    const [rows] = await pool.query(query, [userId, webtoonId]);
+    return rows.length ? toCamelCase(rows[0]) : null;
+  }
+
+  async createFavorite(userId, webtoonId) {
+    const query = `
+      INSERT INTO webtoon_favorites (user_id, webtoon_id)
+      VALUES (?, ?);
+    `;
+    await pool.query(query, [userId, webtoonId]);
+  }
+
+  async deleteFavorite(userId, webtoonId) {
+    const query = `
+      DELETE FROM webtoon_favorites 
+      WHERE user_id = ? AND webtoon_id = ?;
+    `;
+    await pool.query(query, [userId, webtoonId]);
+  }
+
+  async updateFavoriteCount(webtoonId, increment) {
+    const query = `
+      UPDATE webtoons
+      SET favorite_count = favorite_count + ?
+      WHERE id = ?;
+    `;
+    await pool.query(query, [increment, webtoonId]);
+  }
 }
 
 module.exports = WebtoonRepository;

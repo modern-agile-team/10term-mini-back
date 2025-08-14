@@ -1,6 +1,7 @@
 "use strict";
 
 const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
+const UserRepository = require("@repositories/user/userRepository");
 const CustomError = require("@utils/customError");
 
 const DB_COLUMN = {
@@ -13,6 +14,7 @@ const DB_COLUMN = {
 class WebtoonService {
   constructor() {
     this.webtoonRepository = new WebtoonRepository();
+    this.userRepository = new UserRepository();
   }
 
   async getWebtoons({ day, sort }) {
@@ -34,6 +36,33 @@ class WebtoonService {
       throw new CustomError("웹툰을 찾을 수 없습니다.", 404);
     }
     return detail;
+  }
+
+  async toggleFavorite(userId, webtoonId) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new CustomError("존재하지 않는 유저입니다.", 404);
+    }
+
+    const webtoon = await this.webtoonRepository.getWebtoonById(webtoonId);
+    if (!webtoon) {
+      throw new CustomError("웹툰을 찾을 수 없습니다.", 404);
+    }
+
+    const existingFavorite = await this.webtoonRepository.findFavorite(userId, webtoonId);
+
+    let isFavorited;
+    if (existingFavorite) {
+      await this.webtoonRepository.deleteFavorite(userId, webtoonId);
+      await this.webtoonRepository.updateFavoriteCount(webtoonId, -1);
+      isFavorited = false;
+    } else {
+      await this.webtoonRepository.createFavorite(userId, webtoonId);
+      await this.webtoonRepository.updateFavoriteCount(webtoonId, 1);
+      isFavorited = true;
+    }
+
+    return isFavorited;
   }
 }
 
