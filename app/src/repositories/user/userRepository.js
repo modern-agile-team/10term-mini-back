@@ -2,7 +2,6 @@
 
 const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
-const { param } = require("../../routes/home");
 
 class UserRepository {
   async findById(userId) {
