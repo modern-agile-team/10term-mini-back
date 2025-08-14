@@ -2,7 +2,7 @@
 
 const jwt = require("jsonwebtoken");
 
-const authMiddleware = (req, res, next) => {
+const requireAuth = (req, res, next) => {
   const bearerToken = req.headers.authorization;
 
   if (!bearerToken || !bearerToken.startsWith("Bearer ")) {
@@ -19,7 +19,7 @@ const authMiddleware = (req, res, next) => {
     return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
   }
 };
-const authOptional = (req, res, next) => {
+const optionalAuth = (req, res, next) => {
   const bearerToken = req.headers.authorization;
 
   if (!bearerToken || !bearerToken.startsWith("Bearer ")) {
@@ -40,4 +40,4 @@ const authOptional = (req, res, next) => {
   }
 };
 
-module.exports = { authMiddleware, authOptional };
+module.exports = { requireAuth, optionalAuth };

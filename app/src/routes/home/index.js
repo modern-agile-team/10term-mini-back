@@ -16,7 +16,7 @@ const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
 const episodeValidation = require("@validation/webtoon/episodeValidation.js");
 const commentValidation = require("@validation/comment/commentValidation.js");
 const userValidation = require("@validation/user/userValidation.js");
-const { authMiddleware, authOptional } = require("@middleware/authMiddleware.js");
+const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
 
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -32,40 +32,40 @@ router.get(
 );
 router.get(
   "/api/episodes/:episodeId",
-  authOptional,
+  optionalAuth,
   episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
 );
 router.post(
   "/api/episodes/:episodeId/comments",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkEpisodeIdParam,
   commentValidation.checkAddComment,
   commentCtrl.createComment
 );
 router.post(
   "/api/episodes/:episodeId/ratings",
-  authMiddleware,
+  requireAuth,
   episodeValidation.checkEpisodeIdParam,
   episodeValidation.checkRating,
   episodeCtrl.rateEpisode
 );
 router.patch(
   "/api/comments/:commentId",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentValidation.checkUpdateComment,
   commentCtrl.updateComment
 );
 router.delete(
   "/api/comments/:commentId",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentCtrl.deleteComment
 );
 router.put(
   "/api/comments/:commentId/reaction",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentValidation.checkReactionType,
   commentCtrl.reactComment
@@ -76,10 +76,10 @@ router.get(
   commentCtrl.getCommentsByEpisode
 );
 
-router.get("/api/users/me", authMiddleware, userCtrl.getMyInfo);
+router.get("/api/users/me", requireAuth, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",
-  authMiddleware,
+  requireAuth,
   userValidation.checkNicknameUpdate,
   userCtrl.updateNickname
 );
@@ -90,7 +90,7 @@ router.get(
 );
 router.patch(
   "/api/users/me/password",
-  authMiddleware,
+  requireAuth,
   userValidation.checkPasswordUpdate,
   userCtrl.updatePassword
 );
