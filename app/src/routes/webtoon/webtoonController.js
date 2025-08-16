@@ -30,19 +30,4 @@ module.exports = {
       },
     });
   },
-
-  toggleFavorite: async (req, res) => {
-    const userId = req.user.id;
-    const webtoonId = req.params.webtoonId;
-    const isFavorited = await webtoonService.toggleFavorite(userId, webtoonId);
-
-    return res.status(200).json({
-      success: true,
-      data: {
-        message: isFavorited
-          ? "웹툰을 관심 목록에 추가했습니다."
-          : "웹툰을 관심 목록에서 삭제했습니다.",
-      },
-    });
-  },
 };

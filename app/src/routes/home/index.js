@@ -9,6 +9,7 @@ const webtoonCtrl = require("@routes/webtoon/webtoonController.js");
 const episodeCtrl = require("@routes/webtoon/episodeController.js");
 const commentCtrl = require("@routes/comment/commentController.js");
 const userCtrl = require("@routes/user/userController.js");
+const favoriteCtrl = require("@routes/favorite/favoriteController.js");
 
 // 미들웨어
 const authValidation = require("@validation/auth/authValidation.js");
@@ -16,6 +17,7 @@ const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
 const episodeValidation = require("@validation/webtoon/episodeValidation.js");
 const commentValidation = require("@validation/comment/commentValidation.js");
 const userValidation = require("@validation/user/userValidation.js");
+const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
 const authMiddleware = require("@middleware/authMiddleware.js");
 
 // 인증(Authentication) API
@@ -27,6 +29,18 @@ router.post("/api/auth/logout", authCtrl.logout);
 // 웹툰 및 에피소드 조회 API
 router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.getWebtoons);
 router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
+router.post(
+  "/api/webtoons/:webtoonId/favorite",
+  authMiddleware,
+  webtoonValidation.checkWebtoonId,
+  favoriteCtrl.addFavorite
+);
+router.delete(
+  "/api/webtoons/:webtoonId/favorite",
+  authMiddleware,
+  webtoonValidation.checkWebtoonId,
+  favoriteCtrl.removeFavorite
+);
 router.get(
   "/api/webtoons/:webtoonId/episodes",
   webtoonValidation.checkWebtoonId,
@@ -91,25 +105,17 @@ router.patch(
   userValidation.checkPasswordUpdate,
   userCtrl.updatePassword
 );
-
-// 관심웹툰 목록 페이지 API
-router.post(
-  "/api/webtoon/:webtoonId/favorite",
-  authMiddleware,
-  webtoonValidation.checkWebtoonId,
-  webtoonCtrl.toggleFavorite
-);
 router.get(
   "/api/users/me/favorites",
   authMiddleware,
-  userValidation.checkSortParam,
+  favoriteValidation.checkSortParam,
   userCtrl.getMyFavorites
 );
 router.delete(
   "/api/users/me/favorites",
   authMiddleware,
-  userValidation.checkDeleteWebtoonIds,
-  userCtrl.deleteFavorites
+  favoriteValidation.checkDeleteWebtoonIds,
+  userCtrl.removeSelectedFavorites
 );
 
 module.exports = router;

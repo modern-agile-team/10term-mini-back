@@ -64,49 +64,6 @@ class UserRepository {
     const [result] = await pool.query(query, [hashedPassword, userId]);
     return result.affectedRows === 1;
   }
-
-  async findFavoritesByUserId(userId, sort) {
-    const allowedSorts = {
-      recent: "wf.created_at DESC",
-      updated: "w.updated_at DESC",
-    };
-
-    const orderBy = allowedSorts[sort] || allowedSorts.updated;
-
-    const query = `
-      SELECT
-        wf.webtoon_id,
-        w.title,
-        w.writer,
-        w.thumbnail_url,
-        w.updated_at,
-        wf.created_at
-      FROM webtoon_favorites wf
-      JOIN webtoons w ON wf.webtoon_id = w.id
-      WHERE wf.user_id = ?
-      ORDER BY ${orderBy};
-    `;
-
-    const [rows] = await pool.query(query, [userId]);
-    return toCamelCase(rows);
-  }
-
-  async deleteFavorites(userId, webtoonIds) {
-    if (!Array.isArray(webtoonIds) || webtoonIds.length === 0) {
-      return 0;
-    }
-
-    const placeholders = webtoonIds.map(() => "?").join(",");
-
-    const query = `
-      DELETE FROM webtoon_favorites
-      WHERE user_id = ? AND webtoon_id IN (${placeholders});
-    `;
-    const params = [userId, ...webtoonIds];
-    const [result] = await pool.query(query, params);
-    const deletedCount = result.affectedRows || 0;
-    return deletedCount;
-  }
 }
 
 module.exports = UserRepository;

@@ -1,6 +1,6 @@
 "use strict";
 
-const UserRepository = require("@repositories/user/userRepository");
+const UserRepository = require("@repositories/user/userRepository.js");
 const CustomError = require("@utils/customError");
 const bcrypt = require("bcrypt");
 
@@ -55,16 +55,6 @@ class UserService {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.userRepository.updatePassword(userId, hashedPassword);
-  }
-
-  async getMyFavorites(userId, sort) {
-    const favorites = await this.userRepository.findFavoritesByUserId(userId, sort);
-    return favorites;
-  }
-
-  async deleteFavorites(userId, webtoonIds) {
-    const deletedCount = await this.userRepository.deleteFavorites(userId, webtoonIds);
-    return deletedCount;
   }
 }
 
