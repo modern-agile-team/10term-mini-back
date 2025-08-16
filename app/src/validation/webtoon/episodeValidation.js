@@ -1,12 +1,22 @@
 "use strict";
 
-const { param } = require("express-validator");
+const { body, param } = require("express-validator");
 const { createValidation } = require("@middleware/validationHelper.js");
 
-const checkEpisodeId = createValidation(
-  param("episodeId").isInt({ min: 1 }).withMessage("episodeId는 1 이상의 정수여야 합니다.")
+const checkEpisodeIdParam = createValidation(
+  param("episodeId")
+    .bail()
+    .isInt({ min: 1 })
+    .withMessage("episodeId는 1 이상의 정수 형태 문자열이어야 합니다.")
+);
+const checkRating = createValidation(
+  body("rating")
+    .bail()
+    .isInt({ min: 1, max: 10 })
+    .withMessage("rating은 1 이상 10 이하의 정수 형태 문자열이어야 합니다.")
 );
 
 module.exports = {
-  checkEpisodeId,
+  checkEpisodeIdParam,
+  checkRating,
 };
