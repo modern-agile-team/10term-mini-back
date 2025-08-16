@@ -31,21 +31,20 @@ class EpisodeService {
       connection = await pool.getConnection();
       await connection.beginTransaction();
 
-      const insertRes = await this.episodeRepository.createRating(
-        connection,
-        userId,
-        episodeId,
-        rating
-      );
-      const updateRes = await this.episodeRepository.applyNewRating(connection, episodeId, rating);
+      await this.episodeRepository.createRating(connection, userId, episodeId, rating);
+      const stats = await this.episodeRepository.applyNewRating(connection, episodeId, rating);
 
-      if (updateRes.affectedRows === 0) {
+      if (!stats) {
         throw new CustomError("존재하지 않는 에피소드입니다.", 404);
       }
 
       await connection.commit();
 
-      return insertRes;
+      return {
+        episodeId,
+        ratingAvg: stats.ratingAvg,
+        ratingCount: stats.ratingCount,
+      };
     } catch (err) {
       if (connection) {
         await connection.rollback();

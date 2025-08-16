@@ -77,7 +77,7 @@ class EpisodeRepository {
   }
 
   async applyNewRating(conn, episodeId, rating) {
-    const query = `
+    const updateQuery = `
       UPDATE episodes
       SET
         rating_sum = rating_sum + ?,
@@ -85,8 +85,18 @@ class EpisodeRepository {
         rating_avg = ROUND((rating_sum) / (rating_count), 2)
       WHERE id = ?;
     `;
-    const [res] = await conn.query(query, [rating, episodeId]);
-    return res;
+    const [res] = await conn.query(updateQuery, [rating, episodeId]);
+    if (res.affectedRows === 0) return null;
+
+    const selectQuery = `
+    SELECT
+      rating_count,
+      rating_avg
+    FROM episodes
+    WHERE id = ?;
+  `;
+    const [rows] = await conn.query(selectQuery, [episodeId]);
+    return toCamelCase(rows[0]);
   }
 }
 
