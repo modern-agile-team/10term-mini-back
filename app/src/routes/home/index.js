@@ -18,11 +18,13 @@ const commentValidation = require("@validation/comment/commentValidation.js");
 const userValidation = require("@validation/user/userValidation.js");
 const authMiddleware = require("@middleware/authMiddleware.js");
 
+// 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
 router.post("/api/auth/token", authCtrl.issueAccessToken);
 router.post("/api/auth/logout", authCtrl.logout);
 
+// 웹툰 및 에피소드 조회 API
 router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.getWebtoons);
 router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
 router.get(
@@ -35,6 +37,8 @@ router.get(
   episodeValidation.checkEpisodeId,
   episodeCtrl.getEpisodeDetail
 );
+
+// 댓글 API
 router.post(
   "/api/episodes/:episodeId/comments",
   authMiddleware,
@@ -68,6 +72,7 @@ router.get(
   commentCtrl.getCommentsByEpisode
 );
 
+// 마이페이지 API
 router.get("/api/users/me", authMiddleware, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",
@@ -86,4 +91,25 @@ router.patch(
   userValidation.checkPasswordUpdate,
   userCtrl.updatePassword
 );
+
+// 관심웹툰 목록 페이지 API
+router.post(
+  "/api/webtoon/:webtoonId/favorite",
+  authMiddleware,
+  webtoonValidation.checkWebtoonId,
+  webtoonCtrl.toggleFavorite
+);
+router.get(
+  "/api/users/me/favorites",
+  authMiddleware,
+  userValidation.checkSortParam,
+  userCtrl.getMyFavorites
+);
+router.delete(
+  "/api/users/me/favorites",
+  authMiddleware,
+  userValidation.checkDeleteWebtoonIds,
+  userCtrl.deleteFavorites
+);
+
 module.exports = router;
