@@ -33,10 +33,10 @@ const optionalAuth = (req, res, next) => {
     const userPayload = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
     const { id } = userPayload;
     req.user = { id };
-    return next();
   } catch (error) {
     req.user = null;
-    return next();
+  } finally {
+    next();
   }
 };
 

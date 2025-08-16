@@ -26,8 +26,9 @@ class EpisodeService {
   }
 
   async rateEpisode(userId, episodeId, rating) {
+    let connection;
     try {
-      const connection = await pool.getConnection();
+      connection = await pool.getConnection();
       await connection.beginTransaction();
 
       const insertRes = await this.episodeRepository.createRating(

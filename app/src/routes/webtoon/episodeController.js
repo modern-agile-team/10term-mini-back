@@ -38,13 +38,13 @@ module.exports = {
     const { rating } = req.body;
     const userId = req.user.id;
 
-    const insertRes = await episodeService.rateEpisode(userId, episodeId, rating);
+    const insertResult = await episodeService.rateEpisode(userId, episodeId, rating);
 
     return res.status(201).json({
       success: true,
       data: {
         message: "별점 추가 성공",
-        content: insertRes,
+        content: insertResult,
       },
     });
   },
