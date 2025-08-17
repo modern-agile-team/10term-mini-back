@@ -34,7 +34,7 @@ class FavoriteRepository {
     await pool.query(query, [userId, webtoonId]);
   }
 
-  async getFavoritesByUserId(userId, sort) {
+  async findFavoritesByUserId(userId, sort) {
     const key = (sort || "updated").toUpperCase();
     const orderBy = ALLOWED_SORTS[key];
 
