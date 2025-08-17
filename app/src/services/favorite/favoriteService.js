@@ -55,9 +55,11 @@ class FavoriteService {
       webtoonIds
     );
 
-    for (const webtoonId of deletedWebtoonIds) {
-      await this.webtoonRepository.updateFavoriteCount(webtoonId, -1);
-    }
+    await Promise.all(
+      deletedWebtoonIds.map((webtoonId) =>
+        this.webtoonRepository.updateFavoriteCount(webtoonId, -1)
+      )
+    );
   }
 }
 

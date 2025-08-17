@@ -2,12 +2,13 @@
 
 const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
-const ALLOWED_SORTS = {
-  RECENT: "wf.created_at DESC",
-  UPDATED: "w.id DESC",
-};
 
 class FavoriteRepository {
+  static ALLOWED_SORTS = {
+    RECENT: "wf.created_at DESC",
+    UPDATED: "w.id DESC",
+  };
+
   async findFavorite(userId, webtoonId) {
     const query = `
       SELECT *
@@ -36,7 +37,7 @@ class FavoriteRepository {
 
   async findFavoritesByUserId(userId, sort) {
     const key = (sort || "updated").toUpperCase();
-    const orderBy = ALLOWED_SORTS[key];
+    const orderBy = FavoriteRepository.ALLOWED_SORTS[key];
 
     const query = `
       SELECT
@@ -59,23 +60,23 @@ class FavoriteRepository {
   async removeSelectedFavorites(userId, webtoonIds) {
     const placeholders = webtoonIds.map(() => "?").join(",");
 
-    const [existingRows] = await pool.query(
-      `SELECT webtoon_id 
-     FROM webtoon_favorites 
-     WHERE user_id = ? AND webtoon_id IN (${placeholders});`,
-      [userId, ...webtoonIds]
-    );
+    const selectQuery = `
+      SELECT webtoon_id
+      FROM webtoon_favorites
+      WHERE user_id = ? AND webtoon_id IN (${placeholders});
+    `;
+    const [existingRows] = await pool.query(selectQuery, [userId, ...webtoonIds]);
     const existingIds = existingRows.map((r) => r.webtoon_id);
 
     if (existingIds.length === 0) return [];
 
     const deletePlaceholders = existingIds.map(() => "?").join(",");
 
-    await pool.query(
-      `DELETE FROM webtoon_favorites 
-     WHERE user_id = ? AND webtoon_id IN (${deletePlaceholders});`,
-      [userId, ...existingIds]
-    );
+    const deleteQuery = `
+      DELETE FROM webtoon_favorites
+      WHERE user_id = ? AND webtoon_id IN (${deletePlaceholders});
+    `;
+    await pool.query(deleteQuery, [userId, ...existingIds]);
 
     return existingIds;
   }

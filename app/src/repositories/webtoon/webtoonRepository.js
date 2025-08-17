@@ -103,10 +103,10 @@ class WebtoonRepository {
 
   async updateFavoriteCount(webtoonId, increment) {
     const query = `
-    UPDATE webtoons
-    SET favorite_count = favorite_count + ?
-    WHERE id = ?;
-  `;
+      UPDATE webtoons
+      SET favorite_count = favorite_count + ?
+      WHERE id = ?;
+    `;
     await pool.query(query, [increment, webtoonId]);
   }
 }
