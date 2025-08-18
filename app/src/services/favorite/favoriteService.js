@@ -45,7 +45,7 @@ class FavoriteService {
   }
 
   async getMyFavorites(userId, sort) {
-    const favorites = await this.favoriteRepository.findFavoritesByUserId(userId, sort);
+    const favorites = await this.favoriteRepository.getFavoritesByUserId(userId, sort);
     return favorites;
   }
 
