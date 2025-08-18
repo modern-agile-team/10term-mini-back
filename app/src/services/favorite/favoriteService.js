@@ -50,15 +50,14 @@ class FavoriteService {
   }
 
   async removeSelectedFavorites(userId, webtoonIds) {
-    const deletedWebtoonIds = await this.favoriteRepository.removeSelectedFavorites(
-      userId,
-      webtoonIds
-    );
+    const existingFavorites = await this.favoriteRepository.findFavorites(userId, webtoonIds);
+    const existingIds = existingFavorites.map((fav) => fav.webtoonId);
+    if (existingIds.length === 0) return [];
+
+    await this.favoriteRepository.removeSelectedFavorites(userId, existingIds);
 
     await Promise.all(
-      deletedWebtoonIds.map((webtoonId) =>
-        this.webtoonRepository.updateFavoriteCount(webtoonId, -1)
-      )
+      existingIds.map((webtoonId) => this.webtoonRepository.updateFavoriteCount(webtoonId, -1))
     );
   }
 }
