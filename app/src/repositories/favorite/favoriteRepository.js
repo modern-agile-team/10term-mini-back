@@ -19,20 +19,20 @@ class FavoriteRepository {
     return rows.length ? toCamelCase(rows[0]) : null;
   }
 
-  async addFavorite(userId, webtoonId) {
+  async addFavorite(userId, webtoonId, conn) {
     const query = `
       INSERT INTO webtoon_favorites (user_id, webtoon_id)
       VALUES (?, ?);
     `;
-    await pool.query(query, [userId, webtoonId]);
+    await conn.query(query, [userId, webtoonId]);
   }
 
-  async removeFavorite(userId, webtoonId) {
+  async removeFavorite(userId, webtoonId, conn) {
     const query = `
       DELETE FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id = ?;
     `;
-    await pool.query(query, [userId, webtoonId]);
+    await conn.query(query, [userId, webtoonId]);
   }
 
   async getFavoritesByUserId(userId, sort) {
@@ -68,13 +68,13 @@ class FavoriteRepository {
     return toCamelCase(rows);
   }
 
-  async removeSelectedFavorites(userId, webtoonIds) {
+  async removeSelectedFavorites(userId, webtoonIds, conn) {
     const placeholders = webtoonIds.map(() => "?").join(",");
     const query = `
       DELETE FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id IN (${placeholders});
     `;
-    await pool.query(query, [userId, ...webtoonIds]);
+    await conn.query(query, [userId, ...webtoonIds]);
   }
 }
 

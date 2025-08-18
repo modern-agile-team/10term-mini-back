@@ -101,13 +101,13 @@ class WebtoonRepository {
     return toCamelCase(rows[0]);
   }
 
-  async updateFavoriteCount(webtoonId, increment) {
+  async updateFavoriteCount(webtoonId, increment, conn) {
     const query = `
       UPDATE webtoons
       SET favorite_count = favorite_count + ?
       WHERE id = ?;
     `;
-    await pool.query(query, [increment, webtoonId]);
+    await conn.query(query, [increment, webtoonId]);
   }
 }
 
