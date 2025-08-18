@@ -2,6 +2,8 @@
 
 const UserService = require("@services/user/userService.js");
 const userService = new UserService();
+const FavoriteService = require("@services/favorite/favoriteService.js");
+const favoriteService = new FavoriteService();
 
 module.exports = {
   getMyInfo: async (req, res) => {
@@ -64,7 +66,7 @@ module.exports = {
     const userId = req.user.id;
     const sort = req.query.sort;
 
-    const favorites = await userService.getMyFavorites(userId, sort);
+    const favorites = await favoriteService.getMyFavorites(userId, sort);
 
     return res.status(200).json({
       success: true,
@@ -75,15 +77,16 @@ module.exports = {
     });
   },
 
-  deleteFavorites: async (req, res) => {
+  removeSelectedFavorites: async (req, res) => {
     const userId = req.user.id;
     const { webtoonIds } = req.body;
-    const deletedCount = await userService.deleteFavorites(userId, webtoonIds);
+
+    await favoriteService.removeSelectedFavorites(userId, webtoonIds);
 
     return res.status(200).json({
       success: true,
       data: {
-        message: `${deletedCount}개의 관심 웹툰이 삭제되었습니다.`,
+        message: "웹툰을 관심 목록에서 삭제했습니다.",
       },
     });
   },
