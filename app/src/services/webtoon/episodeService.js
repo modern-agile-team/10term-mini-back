@@ -46,7 +46,7 @@ class EpisodeService {
 
       await connection.commit();
       return episode;
-    } catch (err) {
+    } catch (error) {
       if (connection) await connection.rollback();
       throw new CustomError("회차 불러오는 중 오류 발생", 500);
     } finally {
@@ -74,14 +74,14 @@ class EpisodeService {
         ratingAvg: stats.ratingAvg,
         ratingCount: stats.ratingCount,
       };
-    } catch (err) {
+    } catch (error) {
       if (connection) {
         await connection.rollback();
       }
-      if (err && err.code === "ER_DUP_ENTRY") {
+      if (error && error.code === "ER_DUP_ENTRY") {
         throw new CustomError("이미 이 에피소드에 평점을 등록했습니다.", 409);
       }
-      if (err && err.code === "ER_NO_REFERENCED_ROW_2") {
+      if (error && error.code === "ER_NO_REFERENCED_ROW_2") {
         throw new CustomError("존재하지 않는 에피소드입니다.", 404);
       }
       throw new CustomError("평점 등록 중 오류 발생", 500);
