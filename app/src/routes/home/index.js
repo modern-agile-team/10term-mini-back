@@ -18,7 +18,8 @@ const episodeValidation = require("@validation/webtoon/episodeValidation.js");
 const commentValidation = require("@validation/comment/commentValidation.js");
 const userValidation = require("@validation/user/userValidation.js");
 const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
-const authMiddleware = require("@middleware/authMiddleware.js");
+const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
+
 
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
@@ -31,13 +32,13 @@ router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.get
 router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
 router.post(
   "/api/webtoons/:webtoonId/favorite",
-  authMiddleware,
+  requireAuth,
   webtoonValidation.checkWebtoonId,
   favoriteCtrl.addFavorite
 );
 router.delete(
   "/api/webtoons/:webtoonId/favorite",
-  authMiddleware,
+  requireAuth,
   webtoonValidation.checkWebtoonId,
   favoriteCtrl.removeFavorite
 );
@@ -48,34 +49,42 @@ router.get(
 );
 router.get(
   "/api/episodes/:episodeId",
-  episodeValidation.checkEpisodeId,
+  optionalAuth,
+  episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
 );
 
 // 댓글 API
 router.post(
   "/api/episodes/:episodeId/comments",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkEpisodeIdParam,
   commentValidation.checkAddComment,
   commentCtrl.createComment
 );
+router.post(
+  "/api/episodes/:episodeId/ratings",
+  requireAuth,
+  episodeValidation.checkEpisodeIdParam,
+  episodeValidation.checkRating,
+  episodeCtrl.rateEpisode
+);
 router.patch(
   "/api/comments/:commentId",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentValidation.checkUpdateComment,
   commentCtrl.updateComment
 );
 router.delete(
   "/api/comments/:commentId",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentCtrl.deleteComment
 );
 router.put(
   "/api/comments/:commentId/reaction",
-  authMiddleware,
+  requireAuth,
   commentValidation.checkCommentIdParam,
   commentValidation.checkReactionType,
   commentCtrl.reactComment
@@ -87,10 +96,10 @@ router.get(
 );
 
 // 마이페이지 API
-router.get("/api/users/me", authMiddleware, userCtrl.getMyInfo);
+router.get("/api/users/me", requireAuth, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",
-  authMiddleware,
+  requireAuth,
   userValidation.checkNicknameUpdate,
   userCtrl.updateNickname
 );
@@ -101,19 +110,19 @@ router.get(
 );
 router.patch(
   "/api/users/me/password",
-  authMiddleware,
+  requireAuth,
   userValidation.checkPasswordUpdate,
   userCtrl.updatePassword
 );
 router.get(
   "/api/users/me/favorites",
-  authMiddleware,
+  requireAuth,
   favoriteValidation.checkSortParam,
   userCtrl.getMyFavorites
 );
 router.delete(
   "/api/users/me/favorites",
-  authMiddleware,
+  requireAuth,
   favoriteValidation.checkDeleteWebtoonIds,
   userCtrl.removeSelectedFavorites
 );
