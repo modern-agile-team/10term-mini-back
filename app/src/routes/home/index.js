@@ -20,7 +20,6 @@ const userValidation = require("@validation/user/userValidation.js");
 const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
 const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
 
-
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -91,11 +90,12 @@ router.put(
 );
 router.get(
   "/api/episodes/:episodeId/comments",
+  optionalAuth,
   commentValidation.checkEpisodeIdParam,
   commentCtrl.getCommentsByEpisode
 );
 
-// 마이페이지 API
+// User API
 router.get("/api/users/me", requireAuth, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",

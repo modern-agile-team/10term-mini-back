@@ -19,6 +19,7 @@ const requireAuth = (req, res, next) => {
     return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
   }
 };
+
 const optionalAuth = (req, res, next) => {
   const bearerToken = req.headers.authorization;
 

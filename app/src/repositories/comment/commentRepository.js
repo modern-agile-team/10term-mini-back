@@ -99,10 +99,11 @@ class CommentRepository {
 
   async getCommentsByEpisode(episodeId) {
     const query = `
-      SELECT *
-      FROM comments
-      WHERE episode_id = ?
-      ORDER BY created_at ASC;
+      SELECT c.*, u.username, u.nickname
+      FROM comments c
+      JOIN users u ON c.user_id = u.id
+      WHERE c.episode_id = ?
+      ORDER BY c.created_at ASC;
     `;
     const [rows] = await pool.query(query, [episodeId]);
     return toCamelCase(rows);
