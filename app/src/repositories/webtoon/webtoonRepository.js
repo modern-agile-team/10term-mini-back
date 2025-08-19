@@ -1,3 +1,5 @@
+"use strict";
+
 const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
 
@@ -97,6 +99,15 @@ class WebtoonRepository {
     `;
     const [rows] = await pool.query(query, [webtoonId]);
     return toCamelCase(rows[0]);
+  }
+
+  async updateFavoriteCount(webtoonId, increment) {
+    const query = `
+      UPDATE webtoons
+      SET favorite_count = favorite_count + ?
+      WHERE id = ?;
+    `;
+    await pool.query(query, [increment, webtoonId]);
   }
 }
 

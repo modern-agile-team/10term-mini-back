@@ -2,9 +2,11 @@
 
 const UserService = require("@services/user/userService.js");
 const userService = new UserService();
+const FavoriteService = require("@services/favorite/favoriteService.js");
+const favoriteService = new FavoriteService();
 
 module.exports = {
-  getMyInfo: async (req, res, next) => {
+  getMyInfo: async (req, res) => {
     const userId = req.user.id;
     const user = await userService.getMyInfo(userId);
 
@@ -19,7 +21,7 @@ module.exports = {
     });
   },
 
-  updateNickname: async (req, res, next) => {
+  updateNickname: async (req, res) => {
     const userId = req.user.id;
     const { newNickname } = req.body;
     await userService.updateNickname(userId, newNickname);
@@ -32,7 +34,7 @@ module.exports = {
     });
   },
 
-  checkNicknameDuplicate: async (req, res, next) => {
+  checkNicknameDuplicate: async (req, res) => {
     const { nickname } = req.params;
     const isDuplicate = await userService.checkNicknameDuplicate(nickname);
 
@@ -47,7 +49,7 @@ module.exports = {
     });
   },
 
-  updatePassword: async (req, res, next) => {
+  updatePassword: async (req, res) => {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
     await userService.updatePassword(userId, currentPassword, newPassword);
@@ -56,6 +58,35 @@ module.exports = {
       success: true,
       data: {
         message: "비밀번호가 성공적으로 변경되었습니다.",
+      },
+    });
+  },
+
+  getMyFavorites: async (req, res) => {
+    const userId = req.user.id;
+    const sort = req.query.sort;
+
+    const favorites = await favoriteService.getMyFavorites(userId, sort);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "관심 목록 조회 성공",
+        content: favorites,
+      },
+    });
+  },
+
+  removeSelectedFavorites: async (req, res) => {
+    const userId = req.user.id;
+    const { webtoonIds } = req.body;
+
+    await favoriteService.removeSelectedFavorites(userId, webtoonIds);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "웹툰을 관심 목록에서 삭제했습니다.",
       },
     });
   },

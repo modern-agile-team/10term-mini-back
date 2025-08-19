@@ -1,6 +1,7 @@
 "use strict";
 
 const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
+const UserRepository = require("@repositories/user/userRepository");
 const CustomError = require("@utils/customError");
 
 const DB_COLUMN = {
@@ -13,6 +14,7 @@ const DB_COLUMN = {
 class WebtoonService {
   constructor() {
     this.webtoonRepository = new WebtoonRepository();
+    this.userRepository = new UserRepository();
   }
 
   async getWebtoons({ day, sort }) {

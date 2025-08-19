@@ -47,20 +47,20 @@ class UserRepository {
 
   async updateNickname(userId, newNickname) {
     const query = `
-    UPDATE users
-    SET nickname = ?
-    WHERE id = ?;
-  `;
+      UPDATE users
+      SET nickname = ?
+      WHERE id = ?;
+    `;
     const [result] = await pool.query(query, [newNickname, userId]);
     return result.affectedRows === 1;
   }
 
   async updatePassword(userId, hashedPassword) {
     const query = `
-    UPDATE users
-    SET password = ?
-    WHERE id = ?;
-  `;
+      UPDATE users
+      SET password = ?
+      WHERE id = ?;
+    `;
     const [result] = await pool.query(query, [hashedPassword, userId]);
     return result.affectedRows === 1;
   }

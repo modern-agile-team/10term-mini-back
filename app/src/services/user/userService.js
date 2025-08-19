@@ -1,6 +1,6 @@
 "use strict";
 
-const UserRepository = require("@repositories/user/userRepository");
+const UserRepository = require("@repositories/user/userRepository.js");
 const CustomError = require("@utils/customError");
 const bcrypt = require("bcrypt");
 
