@@ -14,15 +14,44 @@ class EpisodeService {
     return episodes;
   }
 
-  async getEpisodeDetail(episodeId, userId) {
-    const episode = await this.episodeRepository.getEpisodeDetailById(episodeId, userId);
-    if (!episode) {
-      throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
+  async openEpisodeDetail(episodeId, userId) {
+    let connection;
+    try {
+      connection = await pool.getConnection();
+
+      await connection.beginTransaction();
+
+      const episode = await this.episodeRepository.getEpisodeDetailById(
+        connection,
+        episodeId,
+        userId
+      );
+
+      if (!episode) {
+        await connection.rollback();
+        throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
+      }
+      const webtoonId = episode.webtoonId;
+      if (!webtoonId) {
+        await connection.rollback();
+        throw new CustomError("에피소드에 연결된 웹툰 정보를 찾을 수 없습니다.", 500);
+      }
+
+      await this.episodeRepository.increaseEpisodeViewCount(connection, episodeId);
+      await this.episodeRepository.increaseWebtoonViewCount(connection, webtoonId);
+
+      if (episode.hasRated != null) {
+        episode.hasRated = Boolean(episode.hasRated);
+      }
+
+      await connection.commit();
+      return episode;
+    } catch (err) {
+      if (connection) await connection.rollback();
+      throw new CustomError("회차 불러오는 중 오류 발생", 500);
+    } finally {
+      if (connection) connection.release();
     }
-    if (episode.hasRated !== undefined && episode.hasRated !== null) {
-      episode.hasRated = !!episode.hasRated;
-    }
-    return episode;
   }
 
   async rateEpisode(userId, episodeId, rating) {

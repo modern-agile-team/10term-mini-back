@@ -18,10 +18,10 @@ module.exports = {
     });
   },
   // 회차 상세 정보 조회
-  getEpisodeDetail: async (req, res) => {
+  openEpisode: async (req, res) => {
     const { episodeId } = req.params;
     const userId = req.user?.id ?? null;
-    const episodeDetail = await episodeService.getEpisodeDetail(episodeId, userId);
+    const episodeDetail = await episodeService.openEpisodeDetail(episodeId, userId);
 
     return res.status(200).json({
       success: true,

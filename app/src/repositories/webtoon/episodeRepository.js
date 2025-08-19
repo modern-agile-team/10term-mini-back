@@ -23,13 +23,14 @@ class EpisodeRepository {
   }
 
   // 회차클릭 후 만화 불러오기
-  async getEpisodeDetailById(episodeId, userId) {
+  async getEpisodeDetailById(conn, episodeId, userId) {
     let query, params;
     if (!userId) {
       // 비로그인
       query = `
         SELECT
-          ep.id AS episode_id,
+          ep.id,
+          ep.webtoon_id,
           ep.episode_no,
           ep.title AS episode_title,
           ep.full_img_url,
@@ -46,7 +47,8 @@ class EpisodeRepository {
       // 로그인
       query = `
       SELECT
-        ep.id AS episode_id,
+        ep.id,
+        ep.webtoon_id,
         ep.episode_no,
         ep.title AS episode_title,
         ep.full_img_url,
@@ -62,8 +64,30 @@ class EpisodeRepository {
     `;
       params = [userId, episodeId];
     }
-    const [rows] = await pool.query(query, params);
+    const [rows] = await conn.query(query, params);
     return toCamelCase(rows[0]);
+  }
+
+  // 회차 조회수 증가
+  async increaseEpisodeViewCount(conn, episodeId) {
+    const query = `
+      UPDATE episodes
+      SET
+        ep_view_count = ep_view_count + 1
+      WHERE id = ?;
+    `;
+    await conn.query(query, [episodeId]);
+  }
+
+  // 웹툰 조회수 증가
+  async increaseWebtoonViewCount(conn, webtoonId) {
+    const query = `
+      UPDATE webtoons
+      SET
+        wt_view_count = wt_view_count + 1
+      WHERE id = ?;
+    `;
+    await conn.query(query, [webtoonId]);
   }
 
   // 별점 등록
