@@ -1,8 +1,8 @@
 "use strict";
 
-const getDb = require("@utils/getDb.js");
 const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
 const CustomError = require("@utils/customError");
+const pool = require("@config/db.js");
 
 class EpisodeService {
   constructor() {
