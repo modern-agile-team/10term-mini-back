@@ -1,11 +1,12 @@
 "use strict";
 
-const pool = require("@config/db");
+const getDb = require("@utils/getDb.js");
 const toCamelCase = require("@utils/toCamelCase.js");
 
 class WebtoonRepository {
   // 요일 기준 정렬 조회
-  async getWebtoonsByDaySorted(day, sort) {
+  async getWebtoonsByDaySorted(day, sort, conn) {
+    const db = getDb(conn);
     let query;
     if (sort === "rating_avg") {
       query = `
@@ -40,11 +41,12 @@ class WebtoonRepository {
         ORDER BY wt.${sort} DESC;
       `;
     }
-    const [rows] = await pool.query(query, [day]);
+    const [rows] = await db.query(query, [day]);
     return toCamelCase(rows);
   }
   // 정렬 조건 기준 전체 조회
-  async getAllWebtoonsSorted(sort) {
+  async getAllWebtoonsSorted(sort, conn) {
+    const db = getDb(conn);
     let query;
     if (sort === "rating_avg") {
       query = `
@@ -75,11 +77,12 @@ class WebtoonRepository {
       ORDER BY wt.${sort} DESC;
     `;
     }
-    const [rows] = await pool.query(query);
+    const [rows] = await db.query(query);
     return toCamelCase(rows);
   }
   // 웹툰 상세 정보 불러오기
-  async getWebtoonById(webtoonId) {
+  async getWebtoonById(webtoonId, conn) {
+    const db = getDb(conn);
     const query = `
       SELECT 
         wt.id, 
@@ -97,17 +100,18 @@ class WebtoonRepository {
       WHERE wt.id = ?
       GROUP BY wt.id;
     `;
-    const [rows] = await pool.query(query, [webtoonId]);
+    const [rows] = await db.query(query, [webtoonId]);
     return toCamelCase(rows[0]);
   }
 
   async updateFavoriteCount(webtoonId, increment, conn) {
+    const db = getDb(conn);
     const query = `
       UPDATE webtoons
       SET favorite_count = favorite_count + ?
       WHERE id = ?;
     `;
-    await conn.query(query, [increment, webtoonId]);
+    await db.query(query, [increment, webtoonId]);
   }
 }
 

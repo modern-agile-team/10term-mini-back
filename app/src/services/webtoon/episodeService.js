@@ -1,8 +1,8 @@
 "use strict";
 
+const getDb = require("@utils/getDb.js");
 const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
 const CustomError = require("@utils/customError");
-const pool = require("@config/db");
 
 class EpisodeService {
   constructor() {
@@ -31,8 +31,8 @@ class EpisodeService {
       connection = await pool.getConnection();
       await connection.beginTransaction();
 
-      await this.episodeRepository.createRating(connection, userId, episodeId, rating);
-      const stats = await this.episodeRepository.applyNewRating(connection, episodeId, rating);
+      await this.episodeRepository.createRating(userId, episodeId, rating, connection);
+      const stats = await this.episodeRepository.applyNewRating(episodeId, rating, connection);
 
       if (!stats) {
         throw new CustomError("존재하지 않는 에피소드입니다.", 404);

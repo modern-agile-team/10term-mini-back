@@ -1,6 +1,6 @@
 "use strict";
 
-const pool = require("@config/db");
+const getDb = require("@utils/getDb.js");
 const toCamelCase = require("@utils/toCamelCase.js");
 
 class FavoriteRepository {
@@ -9,40 +9,37 @@ class FavoriteRepository {
     UPDATED: "w.id DESC",
   };
 
-  async executeQuery(query, params = [], conn) {
-    if (conn) {
-      return conn.query(query, params);
-    }
-    return pool.query(query, params);
-  }
-
   async findFavorite(userId, webtoonId, conn) {
+    const db = getDb(conn);
     const query = `
       SELECT *
       FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id = ?;
     `;
-    const [rows] = await this.executeQuery(query, [userId, webtoonId], conn);
+    const [rows] = await db.query(query, [userId, webtoonId]);
     return rows.length ? toCamelCase(rows[0]) : null;
   }
 
   async addFavorite(userId, webtoonId, conn) {
+    const db = getDb(conn);
     const query = `
       INSERT INTO webtoon_favorites (user_id, webtoon_id)
       VALUES (?, ?);
     `;
-    await this.executeQuery(query, [userId, webtoonId], conn);
+    await db.query(query, [userId, webtoonId]);
   }
 
   async removeFavorite(userId, webtoonId, conn) {
+    const db = getDb(conn);
     const query = `
       DELETE FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id = ?;
     `;
-    await this.executeQuery(query, [userId, webtoonId], conn);
+    await db.query(query, [userId, webtoonId]);
   }
 
   async getFavoritesByUserId(userId, sort, conn) {
+    const db = getDb(conn);
     const key = (sort || "updated").toUpperCase();
     const orderBy = FavoriteRepository.ALLOWED_SORTS[key];
 
@@ -59,28 +56,30 @@ class FavoriteRepository {
       WHERE wf.user_id = ?
       ORDER BY ${orderBy};
     `;
-    const [rows] = await this.executeQuery(query, [userId], conn);
+    const [rows] = await db.query(query, [userId]);
     return toCamelCase(rows);
   }
 
   async findFavorites(userId, webtoonIds, conn) {
+    const db = getDb(conn);
     const placeholders = webtoonIds.map(() => "?").join(",");
     const query = `
       SELECT *
       FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id IN (${placeholders});
     `;
-    const [rows] = await this.executeQuery(query, [userId, ...webtoonIds], conn);
+    const [rows] = await db.query(query, [userId, ...webtoonIds]);
     return toCamelCase(rows);
   }
 
   async removeSelectedFavorites(userId, webtoonIds, conn) {
+    const db = getDb(conn);
     const placeholders = webtoonIds.map(() => "?").join(",");
     const query = `
       DELETE FROM webtoon_favorites
       WHERE user_id = ? AND webtoon_id IN (${placeholders});
     `;
-    await this.executeQuery(query, [userId, ...webtoonIds], conn);
+    await db.query(query, [userId, ...webtoonIds]);
   }
 }
 
