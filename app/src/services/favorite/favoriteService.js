@@ -4,6 +4,7 @@ const WebtoonRepository = require("@repositories/webtoon/webtoonRepository.js");
 const UserRepository = require("@repositories/user/userRepository.js");
 const FavoriteRepository = require("@repositories/favorite/favoriteRepository.js");
 const CustomError = require("@utils/customError");
+const pool = require("@config/db.js");
 
 class FavoriteService {
   constructor() {
@@ -24,8 +25,21 @@ class FavoriteService {
       throw new CustomError("이미 관심 목록에 추가된 웹툰입니다.", 409);
     }
 
-    await this.favoriteRepository.addFavorite(userId, webtoonId);
-    await this.webtoonRepository.updateFavoriteCount(webtoonId, 1);
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      await this.favoriteRepository.addFavorite(userId, webtoonId, connection);
+      await this.webtoonRepository.updateFavoriteCount(webtoonId, 1, connection);
+
+      await connection.commit();
+    } catch (error) {
+      if (connection) await connection.rollback();
+      throw new CustomError("관심 등록 중 오류 발생", 500);
+    } finally {
+      if (connection) connection.release();
+    }
   }
 
   async removeFavorite(userId, webtoonId) {
@@ -40,8 +54,21 @@ class FavoriteService {
       throw new CustomError("관심 목록에 없는 웹툰입니다.", 404);
     }
 
-    await this.favoriteRepository.removeFavorite(userId, webtoonId);
-    await this.webtoonRepository.updateFavoriteCount(webtoonId, -1);
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      await connection.beginTransaction();
+
+      await this.favoriteRepository.removeFavorite(userId, webtoonId, connection);
+      await this.webtoonRepository.updateFavoriteCount(webtoonId, -1, connection);
+
+      await connection.commit();
+    } catch (error) {
+      if (connection) await connection.rollback();
+      throw new CustomError("관심 해제 중 오류 발생", 500);
+    } finally {
+      if (connection) connection.release();
+    }
   }
 
   async getMyFavorites(userId, sort) {
@@ -54,11 +81,25 @@ class FavoriteService {
     const existingIds = existingFavorites.map((fav) => fav.webtoonId);
     if (existingIds.length === 0) return [];
 
-    await this.favoriteRepository.removeSelectedFavorites(userId, existingIds);
+    let connection;
+    try {
+      connection = await pool.getConnection();
+      await connection.beginTransaction();
 
-    await Promise.all(
-      existingIds.map((webtoonId) => this.webtoonRepository.updateFavoriteCount(webtoonId, -1))
-    );
+      await this.favoriteRepository.removeSelectedFavorites(userId, existingIds, connection);
+
+      await Promise.all(
+        existingIds.map((webtoonId) =>
+          this.webtoonRepository.updateFavoriteCount(webtoonId, -1, connection)
+        )
+      );
+      await connection.commit();
+    } catch (error) {
+      if (connection) await connection.rollback();
+      throw new CustomError("선택한 관심 해제 중 오류 발생", 500);
+    } finally {
+      if (connection) connection.release();
+    }
   }
 }
 
