@@ -23,7 +23,7 @@ class EpisodeRepository {
   }
 
   // 회차클릭 후 만화 불러오기
-  async getEpisodeDetailById(conn, episodeId, userId) {
+  async getEpisodeDetailById(episodeId, userId) {
     let query, params;
     if (!userId) {
       // 비로그인
@@ -64,7 +64,7 @@ class EpisodeRepository {
     `;
       params = [userId, episodeId];
     }
-    const [rows] = await conn.query(query, params);
+    const [rows] = await pool.query(query, params);
     return toCamelCase(rows[0]);
   }
 
@@ -76,18 +76,8 @@ class EpisodeRepository {
         ep_view_count = ep_view_count + 1
       WHERE id = ?;
     `;
-    await conn.query(query, [episodeId]);
-  }
-
-  // 웹툰 조회수 증가
-  async increaseWebtoonViewCount(conn, webtoonId) {
-    const query = `
-      UPDATE webtoons
-      SET
-        wt_view_count = wt_view_count + 1
-      WHERE id = ?;
-    `;
-    await conn.query(query, [webtoonId]);
+    const [ret] = await conn.query(query, [episodeId]);
+    return ret.affectedRows;
   }
 
   // 별점 등록

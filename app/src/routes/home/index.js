@@ -46,11 +46,16 @@ router.get(
   webtoonValidation.checkWebtoonId,
   episodeCtrl.getWebtoonEpisodes
 );
-router.post(
+router.get(
   "/api/episodes/:episodeId",
   optionalAuth,
   episodeValidation.checkEpisodeIdParam,
-  episodeCtrl.openEpisode
+  episodeCtrl.getEpisodeDetail
+);
+router.post(
+  "/api/episodes/:episodeId/view-count",
+  episodeValidation.checkEpisodeIdParam,
+  episodeCtrl.addEpisodeView
 );
 
 // 댓글 API

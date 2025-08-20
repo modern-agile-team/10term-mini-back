@@ -18,16 +18,28 @@ module.exports = {
     });
   },
   // 회차 상세 정보 조회
-  openEpisode: async (req, res) => {
+  getEpisodeDetail: async (req, res) => {
     const { episodeId } = req.params;
     const userId = req.user?.id ?? null;
-    const episodeDetail = await episodeService.openEpisodeDetail(episodeId, userId);
+    const episodeDetail = await episodeService.getEpisodeDetail(episodeId, userId);
 
     return res.status(200).json({
       success: true,
       data: {
         message: "회차 상세정보 조회 성공",
         content: episodeDetail,
+      },
+    });
+  },
+  // 회차 조회수 증가
+  addEpisodeView: async (req, res) => {
+    const { episodeId } = req.params;
+    await episodeService.addEpisodeView(episodeId);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "조회수 증가 성공",
       },
     });
   },
