@@ -20,7 +20,6 @@ const userValidation = require("@validation/user/userValidation.js");
 const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
 const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
 
-
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -29,7 +28,12 @@ router.post("/api/auth/logout", authCtrl.logout);
 
 // 웹툰 및 에피소드 조회 API
 router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.getWebtoons);
-router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
+router.get(
+  "/api/webtoons/:webtoonId",
+  optionalAuth,
+  webtoonValidation.checkWebtoonId,
+  webtoonCtrl.getDetail
+);
 router.post(
   "/api/webtoons/:webtoonId/favorite",
   requireAuth,
