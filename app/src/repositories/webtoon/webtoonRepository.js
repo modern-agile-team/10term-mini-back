@@ -113,6 +113,18 @@ class WebtoonRepository {
     `;
     await db.query(query, [increment, webtoonId]);
   }
+
+  // 웹툰 조회수 증가
+  async increaseWebtoonViewCountByEpisodeId(conn, episodeId) {
+    const query = `
+      UPDATE webtoons wt
+      JOIN episodes ep ON ep.webtoon_id = wt.id
+      SET wt.wt_view_count = wt.wt_view_count + 1
+      WHERE ep.id = ?;
+    `;
+    const [ret] = await conn.query(query, [episodeId]);
+    return ret.affectedRows;
+  }
 }
 
 module.exports = WebtoonRepository;

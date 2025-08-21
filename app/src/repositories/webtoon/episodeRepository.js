@@ -31,7 +31,8 @@ class EpisodeRepository {
       // 비로그인
       query = `
         SELECT
-          ep.id AS episode_id,
+          ep.id,
+          ep.webtoon_id,
           ep.episode_no,
           ep.title AS episode_title,
           ep.full_img_url,
@@ -48,7 +49,8 @@ class EpisodeRepository {
       // 로그인
       query = `
       SELECT
-        ep.id AS episode_id,
+        ep.id,
+        ep.webtoon_id,
         ep.episode_no,
         ep.title AS episode_title,
         ep.full_img_url,
@@ -66,6 +68,18 @@ class EpisodeRepository {
     }
     const [rows] = await db.query(query, params);
     return toCamelCase(rows[0]);
+  }
+
+  // 회차 조회수 증가
+  async increaseEpisodeViewCount(conn, episodeId) {
+    const query = `
+      UPDATE episodes
+      SET
+        ep_view_count = ep_view_count + 1
+      WHERE id = ?;
+    `;
+    const [ret] = await conn.query(query, [episodeId]);
+    return ret.affectedRows;
   }
 
   // 별점 등록

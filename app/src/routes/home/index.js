@@ -20,7 +20,6 @@ const userValidation = require("@validation/user/userValidation");
 const favoriteValidation = require("@validation/favorite/favoriteValidation");
 const { requireAuth, optionalAuth } = require("@middleware/authMiddleware");
 
-
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -52,6 +51,11 @@ router.get(
   optionalAuth,
   episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
+);
+router.post(
+  "/api/episodes/:episodeId/view-count",
+  episodeValidation.checkEpisodeIdParam,
+  episodeCtrl.addEpisodeView
 );
 
 // 댓글 API
