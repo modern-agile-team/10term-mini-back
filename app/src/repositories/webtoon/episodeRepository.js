@@ -1,11 +1,12 @@
 "use strict";
 
-const pool = require("@config/db");
-const toCamelCase = require("@utils/toCamelCase.js");
+const getDb = require("@utils/getDb");
+const toCamelCase = require("@utils/toCamelCase");
 
 class EpisodeRepository {
   // 웹툰에 맞는 전체 회차 불러오기
-  async getEpisodesByWebtoonId(webtoonId) {
+  async getEpisodesByWebtoonId(webtoonId, conn) {
+    const db = getDb(conn);
     const query = `
         SELECT
           ep.id,
@@ -18,12 +19,13 @@ class EpisodeRepository {
         WHERE ep.webtoon_id = ?
         ORDER BY ep.episode_no ASC;
       `;
-    const [rows] = await pool.query(query, [webtoonId]);
+    const [rows] = await db.query(query, [webtoonId]);
     return toCamelCase(rows);
   }
 
   // 회차클릭 후 만화 불러오기
-  async getEpisodeDetailById(episodeId, userId) {
+  async getEpisodeDetailById(episodeId, userId, conn) {
+    const db = getDb(conn);
     let query, params;
     if (!userId) {
       // 비로그인
@@ -62,21 +64,23 @@ class EpisodeRepository {
     `;
       params = [userId, episodeId];
     }
-    const [rows] = await pool.query(query, params);
+    const [rows] = await db.query(query, params);
     return toCamelCase(rows[0]);
   }
 
   // 별점 등록
-  async createRating(conn, userId, episodeId, rating) {
+  async createRating(userId, episodeId, rating, conn) {
+    const db = getDb(conn);
     const query = `
       INSERT INTO ratings (user_id, episode_id, rating)
       VALUES (?, ?, ?);
     `;
-    const [res] = await conn.query(query, [userId, episodeId, rating]);
+    const [res] = await db.query(query, [userId, episodeId, rating]);
     return res;
   }
 
-  async applyNewRating(conn, episodeId, rating) {
+  async applyNewRating(episodeId, rating, conn) {
+    const db = getDb(conn);
     const updateQuery = `
       UPDATE episodes
       SET
@@ -85,7 +89,7 @@ class EpisodeRepository {
         rating_avg = ROUND((rating_sum) / (rating_count), 2)
       WHERE id = ?;
     `;
-    const [res] = await conn.query(updateQuery, [rating, episodeId]);
+    const [res] = await db.query(updateQuery, [rating, episodeId]);
     if (res.affectedRows === 0) return null;
 
     const selectQuery = `
@@ -95,7 +99,7 @@ class EpisodeRepository {
     FROM episodes
     WHERE id = ?;
   `;
-    const [rows] = await conn.query(selectQuery, [episodeId]);
+    const [rows] = await db.query(selectQuery, [episodeId]);
     return toCamelCase(rows[0]);
   }
 }

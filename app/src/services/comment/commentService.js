@@ -1,8 +1,8 @@
 "use strict";
 
-const CommentRepository = require("@repositories/comment/commentRepository.js");
+const CommentRepository = require("@repositories/comment/commentRepository");
 const CustomError = require("@utils/customError");
-const EpisodeRepository = require("@repositories/webtoon/episodeRepository.js");
+const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
 
 class CommentService {
   constructor() {
