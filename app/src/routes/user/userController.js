@@ -1,8 +1,8 @@
 "use strict";
 
-const UserService = require("@services/user/userService.js");
+const UserService = require("@services/user/userService");
 const userService = new UserService();
-const FavoriteService = require("@services/favorite/favoriteService.js");
+const FavoriteService = require("@services/favorite/favoriteService");
 const favoriteService = new FavoriteService();
 
 module.exports = {
