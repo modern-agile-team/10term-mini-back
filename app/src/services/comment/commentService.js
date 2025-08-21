@@ -95,17 +95,26 @@ class CommentService {
     if (!existingEpisode) throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
 
     const comments = await this.commentRepository.getCommentsByEpisode(episodeId);
+    const commentIds = comments.map((c) => c.id);
+
+    const reactionsList = await Promise.all(
+      commentIds.map((id) => this.commentRepository.countReactions(id))
+    );
+
+    let userReactionsMap = {};
+    if (userId) {
+      const userReactions = await Promise.all(
+        commentIds.map((id) => this.commentRepository.findReaction(id, userId))
+      );
+      userReactions.forEach((r, idx) => {
+        userReactionsMap[commentIds[idx]] = r?.reactionType || null;
+      });
+    }
 
     const map = {};
     const roots = [];
 
-    for (const comment of comments) {
-      const reactions = await this.commentRepository.countReactions(comment.id);
-
-      const userReaction = userId
-        ? (await this.commentRepository.findReaction(comment.id, userId))?.reactionType || null
-        : null;
-
+    comments.forEach((comment, idx) => {
       const commentObj = {
         id: comment.id,
         content: comment.content,
@@ -118,18 +127,15 @@ class CommentService {
           nickname: comment.nickname,
         },
         reaction: {
-          likeCount: reactions.likeCount,
-          dislikeCount: reactions.dislikeCount,
-          userReaction,
+          likeCount: reactionsList[idx].likeCount,
+          dislikeCount: reactionsList[idx].dislikeCount,
+          userReaction: userReactionsMap[comment.id] || null,
         },
       };
 
-      if (comment.parentId === null) {
-        commentObj.children = [];
-      }
-
+      if (comment.parentId === null) commentObj.children = [];
       map[comment.id] = commentObj;
-    }
+    });
 
     comments.forEach((comment) => {
       const commentObj = map[comment.id];
