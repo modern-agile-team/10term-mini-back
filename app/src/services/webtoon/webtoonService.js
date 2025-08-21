@@ -1,6 +1,7 @@
 "use strict";
 
 const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
+const FavoriteRepository = require("@repositories/favorite/favoriteRepository");
 const UserRepository = require("@repositories/user/userRepository");
 const CustomError = require("@utils/customError");
 
@@ -14,6 +15,7 @@ const DB_COLUMN = {
 class WebtoonService {
   constructor() {
     this.webtoonRepository = new WebtoonRepository();
+    this.favoriteRepository = new FavoriteRepository();
     this.userRepository = new UserRepository();
   }
 
@@ -30,11 +32,19 @@ class WebtoonService {
     return webtoons;
   }
 
-  async getWebtoonDetail(webtoonId) {
+  async getWebtoonDetail(webtoonId, userId) {
     const detail = await this.webtoonRepository.getWebtoonById(webtoonId);
     if (!detail) {
       throw new CustomError("웹툰을 찾을 수 없습니다.", 404);
     }
+
+    if (userId) {
+      const favorite = await this.favoriteRepository.findFavorite(userId, webtoonId);
+      detail.isFavorite = !!favorite;
+    } else {
+      detail.isFavorite = false;
+    }
+
     return detail;
   }
 

@@ -4,21 +4,21 @@ const express = require("express");
 const router = express.Router();
 
 // 컨트롤러
-const authCtrl = require("@routes/auth/authController.js");
-const webtoonCtrl = require("@routes/webtoon/webtoonController.js");
-const episodeCtrl = require("@routes/webtoon/episodeController.js");
-const commentCtrl = require("@routes/comment/commentController.js");
-const userCtrl = require("@routes/user/userController.js");
-const favoriteCtrl = require("@routes/favorite/favoriteController.js");
+const authCtrl = require("@routes/auth/authController");
+const webtoonCtrl = require("@routes/webtoon/webtoonController");
+const episodeCtrl = require("@routes/webtoon/episodeController");
+const commentCtrl = require("@routes/comment/commentController");
+const userCtrl = require("@routes/user/userController");
+const favoriteCtrl = require("@routes/favorite/favoriteController");
 
 // 미들웨어
-const authValidation = require("@validation/auth/authValidation.js");
-const webtoonValidation = require("@validation/webtoon/webtoonValidation.js");
-const episodeValidation = require("@validation/webtoon/episodeValidation.js");
-const commentValidation = require("@validation/comment/commentValidation.js");
-const userValidation = require("@validation/user/userValidation.js");
-const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
-const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
+const authValidation = require("@validation/auth/authValidation");
+const webtoonValidation = require("@validation/webtoon/webtoonValidation");
+const episodeValidation = require("@validation/webtoon/episodeValidation");
+const commentValidation = require("@validation/comment/commentValidation");
+const userValidation = require("@validation/user/userValidation");
+const favoriteValidation = require("@validation/favorite/favoriteValidation");
+const { requireAuth, optionalAuth } = require("@middleware/authMiddleware");
 
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
@@ -28,7 +28,12 @@ router.post("/api/auth/logout", authCtrl.logout);
 
 // 웹툰 및 에피소드 조회 API
 router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.getWebtoons);
-router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
+router.get(
+  "/api/webtoons/:webtoonId",
+  optionalAuth,
+  webtoonValidation.checkWebtoonId,
+  webtoonCtrl.getDetail
+);
 router.post(
   "/api/webtoons/:webtoonId/favorite",
   requireAuth,
@@ -51,6 +56,11 @@ router.get(
   optionalAuth,
   episodeValidation.checkEpisodeIdParam,
   episodeCtrl.getEpisodeDetail
+);
+router.post(
+  "/api/episodes/:episodeId/view-count",
+  episodeValidation.checkEpisodeIdParam,
+  episodeCtrl.addEpisodeView
 );
 
 // 댓글 API
@@ -90,11 +100,12 @@ router.put(
 );
 router.get(
   "/api/episodes/:episodeId/comments",
+  optionalAuth,
   commentValidation.checkEpisodeIdParam,
   commentCtrl.getCommentsByEpisode
 );
 
-// 마이페이지 API
+// User API
 router.get("/api/users/me", requireAuth, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",

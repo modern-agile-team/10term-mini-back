@@ -1,7 +1,7 @@
 "use strict";
 
-const AuthService = require("@services/auth/authService.js");
-const { setRefreshToken, clearRefreshToken } = require("@utils/cookie.js");
+const AuthService = require("@services/auth/authService");
+const { setRefreshToken, clearRefreshToken } = require("@utils/cookie");
 const authService = new AuthService();
 function handleRefreshToken(res, data) {
   if (data.refreshToken) {

@@ -1,6 +1,6 @@
 "use strict";
 
-const CommentService = require("@services/comment/commentService.js");
+const CommentService = require("@services/comment/commentService");
 const commentService = new CommentService();
 
 module.exports = {
@@ -66,7 +66,9 @@ module.exports = {
 
   getCommentsByEpisode: async (req, res) => {
     const { episodeId } = req.params;
-    const comments = await commentService.getCommentsByEpisode(episodeId);
+    const userId = req.user?.id || null;
+
+    const comments = await commentService.getCommentsByEpisode(episodeId, userId);
     return res.status(200).json({
       success: true,
       data: {

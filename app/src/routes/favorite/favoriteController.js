@@ -1,6 +1,6 @@
 "use strict";
 
-const FavoriteService = require("@services/favorite/favoriteService.js");
+const FavoriteService = require("@services/favorite/favoriteService");
 const favoriteService = new FavoriteService();
 
 module.exports = {
