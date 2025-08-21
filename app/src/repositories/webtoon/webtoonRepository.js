@@ -15,37 +15,36 @@ class WebtoonRepository {
   async getWebtoonsByDaySorted(day, sort) {
     let query;
     const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
-
     if (dbSortKey === "rating_avg") {
       query = `
-        SELECT 
+        SELECT DISTINCT
           wt.id,
           wt.title,
-          wd.day_of_week AS weekdays,
+          wd.day_of_week AS weekday,
           wt.thumbnail_url,
-          ROUND(IFNULL(AVG(ep.rating_avg), 0), 2) AS average_rating
-        FROM webtoons AS wt
-        JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-        JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-        LEFT JOIN episodes AS ep ON wt.id = ep.webtoon_id
+          ROUND(IFNULL(e.avg_rating, 0), 2) AS average_rating
+        FROM webtoons wt
+        JOIN webtoon_weekdays wtd ON wt.id = wtd.webtoon_id
+        JOIN weekdays wd ON wd.id = wtd.weekdays_key
+        LEFT JOIN (
+          SELECT webtoon_id, AVG(rating_avg) AS avg_rating
+          FROM episodes
+          GROUP BY webtoon_id
+        ) e ON e.webtoon_id = wt.id
         WHERE wd.day_of_week = ?
-        GROUP BY wt.id
         ORDER BY average_rating DESC;
       `;
     } else {
       query = `
-        SELECT 
+        SELECT DISTINCT
           wt.id,
           wt.title,
-          wd.day_of_week AS weekdays,
-          wt.thumbnail_url,
-          ROUND(IFNULL(AVG(ep.rating_avg), 0), 2) AS average_rating
-        FROM webtoons AS wt
-        JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-        JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-        LEFT JOIN episodes AS ep ON wt.id = ep.webtoon_id
+          wd.day_of_week AS weekday,
+          wt.thumbnail_url
+        FROM webtoons wt
+        JOIN webtoon_weekdays wtd ON wt.id = wtd.webtoon_id
+        JOIN weekdays wd ON wd.id = wtd.weekdays_key
         WHERE wd.day_of_week = ?
-        GROUP BY wt.id
         ORDER BY wt.${dbSortKey} DESC;
       `;
     }
@@ -58,32 +57,34 @@ class WebtoonRepository {
     const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
     if (dbSortKey === "rating_avg") {
       query = `
-      SELECT 
-        wt.id,
-        wt.title,
-        JSON_ARRAYAGG(wd.day_of_week) AS weekdays,
-        wt.thumbnail_url,
-        ROUND(IFNULL(AVG(ep.rating_avg), 0), 2) AS average_rating
-      FROM webtoons AS wt
-      LEFT JOIN episodes AS ep ON wt.id = ep.webtoon_id
-      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-      GROUP BY wt.id
-      ORDER BY average_rating DESC;
-    `;
+        SELECT DISTINCT
+          wt.id,
+          wt.title,
+          wt.thumbnail_url,
+          wd.day_of_week AS weekday,
+          ROUND(IFNULL(e.avg_rating, 0), 2) AS average_rating
+        FROM webtoons wt
+        JOIN webtoon_weekdays wtd ON wt.id = wtd.webtoon_id
+        JOIN weekdays wd ON wd.id = wtd.weekdays_key
+        LEFT JOIN (
+          SELECT webtoon_id, AVG(rating_avg) AS avg_rating
+          FROM episodes
+          GROUP BY webtoon_id
+        ) e ON e.webtoon_id = wt.id
+        ORDER BY average_rating DESC;
+      `;
     } else {
       query = `
-      SELECT 
-        wt.id, 
-        wt.title, 
-        JSON_ARRAYAGG(wd.day_of_week) AS weekdays,
-        wt.thumbnail_url
-      FROM webtoons AS wt
-      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-      GROUP BY wt.id
-      ORDER BY wt.${dbSortKey} DESC;
-    `;
+        SELECT DISTINCT
+          wt.id,
+          wt.title,
+          wt.thumbnail_url,
+          wd.day_of_week AS weekday
+        FROM webtoons wt
+        JOIN webtoon_weekdays wtd ON wt.id = wtd.webtoon_id
+        JOIN weekdays wd ON wd.id = wtd.weekdays_key
+        ORDER BY wt.${dbSortKey} DESC;
+      `;
     }
     const [rows] = await pool.query(query);
     return toCamelCase(rows);
@@ -91,21 +92,31 @@ class WebtoonRepository {
   // 웹툰 상세 정보 불러오기
   async getWebtoonById(webtoonId) {
     const query = `
-      SELECT 
-        wt.id, 
-        wt.title, 
-        wt.writer, 
-        wt.illustrator, 
-        JSON_ARRAYAGG(wd.day_of_week) AS weekdays,
-        wt.age_rating, 
-        wt.description, 
-        wt.thumbnail_url, 
+      SELECT
+        wt.id,
+        wt.title,
+        wt.writer,
+        wt.illustrator,
+        COALESCE(w.weekdays, JSON_ARRAY()) AS weekdays,
+        wt.age_rating,
+        wt.description,
+        wt.thumbnail_url,
         wt.favorite_count
-      FROM webtoons AS wt
-      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
-      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
-      WHERE wt.id = ?
-      GROUP BY wt.id;
+      FROM webtoons wt
+      LEFT JOIN (
+        SELECT
+          d.webtoon_id,
+          JSON_ARRAYAGG(d.day_of_week) AS weekdays
+        FROM (
+          SELECT DISTINCT
+            wtd.webtoon_id AS webtoon_id,
+            wd.day_of_week  AS day_of_week
+          FROM webtoon_weekdays wtd
+          JOIN weekdays wd ON wd.id = wtd.weekdays_key
+        ) d
+        GROUP BY d.webtoon_id
+      ) w ON w.webtoon_id = wt.id
+      WHERE wt.id = ?;
     `;
     const [rows] = await pool.query(query, [webtoonId]);
     return toCamelCase(rows[0]);
