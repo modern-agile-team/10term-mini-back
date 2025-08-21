@@ -38,8 +38,8 @@ class EpisodeService {
       await connection.beginTransaction();
 
       const [epRows, wtRows] = await Promise.all([
-        this.episodeRepository.increaseEpisodeViewCount(connection, episodeId),
-        this.webtoonRepository.increaseWebtoonViewCountByEpisodeId(connection, episodeId),
+        this.episodeRepository.increaseEpisodeViewCount(episodeId, connection),
+        this.webtoonRepository.increaseWebtoonViewCountByEpisodeId(episodeId, connection),
       ]);
 
       if (epRows !== 1 || wtRows !== 1) {
