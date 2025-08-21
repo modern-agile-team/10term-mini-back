@@ -37,6 +37,14 @@ class WebtoonService {
     }
     return detail;
   }
+
+  async searchWebtoons(keyword) {
+    const data = await this.webtoonRepository.getByKeyword(keyword.trim());
+    return {
+      total: data.length,
+      results: data,
+    };
+  }
 }
 
 module.exports = WebtoonService;

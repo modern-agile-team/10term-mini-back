@@ -20,7 +20,6 @@ const userValidation = require("@validation/user/userValidation.js");
 const favoriteValidation = require("@validation/favorite/favoriteValidation.js");
 const { requireAuth, optionalAuth } = require("@middleware/authMiddleware.js");
 
-
 // 인증(Authentication) API
 router.post("/api/auth/signup", authValidation.checkAddUser, authCtrl.signUp);
 router.post("/api/auth/login", authValidation.checkUser, authCtrl.login);
@@ -126,5 +125,8 @@ router.delete(
   favoriteValidation.checkDeleteWebtoonIds,
   userCtrl.removeSelectedFavorites
 );
+
+// 웹툰 검색 API
+router.get("/api/search/webtoons", webtoonValidation.checkSearchQuery, webtoonCtrl.searchWebtoons);
 
 module.exports = router;

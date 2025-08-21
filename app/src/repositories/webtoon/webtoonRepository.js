@@ -109,6 +109,29 @@ class WebtoonRepository {
     `;
     await conn.query(query, [increment, webtoonId]);
   }
+
+  async getByKeyword(keyword) {
+    const query = `
+      SELECT 
+        wt.id, 
+        wt.title, 
+        wt.writer, 
+        wt.illustrator,
+        wt.description,
+        wt.updated_at,
+        wt.thumbnail_url,
+        JSON_ARRAYAGG(wd.day_of_week) AS weekdays
+      FROM webtoons AS wt
+      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
+      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
+      WHERE wt.title LIKE ? OR wt.writer LIKE ?
+      GROUP BY wt.id
+      ORDER BY wt.favorite_count DESC;
+    `;
+
+    const [rows] = await pool.query(query, [`%${keyword}%`, `%${keyword}%`]);
+    return toCamelCase(rows);
+  }
 }
 
 module.exports = WebtoonRepository;
