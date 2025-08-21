@@ -100,11 +100,12 @@ router.put(
 );
 router.get(
   "/api/episodes/:episodeId/comments",
+  optionalAuth,
   commentValidation.checkEpisodeIdParam,
   commentCtrl.getCommentsByEpisode
 );
 
-// 마이페이지 API
+// User API
 router.get("/api/users/me", requireAuth, userCtrl.getMyInfo);
 router.patch(
   "/api/users/me/nickname",

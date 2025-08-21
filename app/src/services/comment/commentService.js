@@ -85,44 +85,72 @@ class CommentService {
       finalReaction = type;
     }
 
-    const reactionCounts = await this.commentRepository.countReactions(commentId);
-
     return {
-      reactions: reactionCounts,
       myReaction: finalReaction ? finalReaction : null,
     };
   }
 
-  async getCommentsByEpisode(episodeId) {
+  async getCommentsByEpisode(episodeId, userId) {
     const existingEpisode = await this.episodeRepository.getEpisodeDetailById(episodeId);
-    if (!existingEpisode) {
-      throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
-    }
+    if (!existingEpisode) throw new CustomError("해당 에피소드를 찾을 수 없습니다.", 404);
 
     const comments = await this.commentRepository.getCommentsByEpisode(episodeId);
+    const commentIds = comments.map((c) => c.id);
+
+    const reactionsList = await Promise.all(
+      commentIds.map((id) => this.commentRepository.countReactions(id))
+    );
+
+    let userReactionsMap = {};
+    if (userId) {
+      const userReactions = await Promise.all(
+        commentIds.map((id) => this.commentRepository.findReaction(id, userId))
+      );
+      userReactions.forEach((r, idx) => {
+        userReactionsMap[commentIds[idx]] = r?.reactionType || null;
+      });
+    }
 
     const map = {};
     const roots = [];
 
-    comments.forEach((comment) => {
-      if (!comment.parentId) {
-        comment.children = [];
-      }
-      map[comment.id] = comment;
+    comments.forEach((comment, idx) => {
+      const commentObj = {
+        id: comment.id,
+        content: comment.content,
+        parentId: comment.parentId,
+        createdAt: comment.createdAt,
+        updatedAt: comment.updatedAt,
+        user: {
+          userId: comment.userId,
+          username: comment.username,
+          nickname: comment.nickname,
+        },
+        reaction: {
+          likeCount: reactionsList[idx].likeCount,
+          dislikeCount: reactionsList[idx].dislikeCount,
+          userReaction: userReactionsMap[comment.id] || null,
+        },
+      };
+
+      if (comment.parentId === null) commentObj.children = [];
+      map[comment.id] = commentObj;
     });
 
     comments.forEach((comment) => {
+      const commentObj = map[comment.id];
       if (comment.parentId) {
         const parent = map[comment.parentId];
-        if (parent) {
-          parent.children.push(comment);
-        }
+        if (parent) parent.children.push(commentObj);
       } else {
-        roots.push(comment);
+        roots.push(commentObj);
       }
     });
 
-    return roots;
+    return {
+      totalCount: comments.length,
+      comments: roots,
+    };
   }
 }
 
