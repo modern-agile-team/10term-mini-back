@@ -2,7 +2,7 @@
 
 const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
 const CustomError = require("@utils/customError");
-const pool = require("@config/db.js");
+const pool = require("@config/db");
 
 class EpisodeService {
   constructor() {

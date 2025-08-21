@@ -1,7 +1,7 @@
 "use strict";
 
-const getDb = require("@utils/getDb.js");
-const toCamelCase = require("@utils/toCamelCase.js");
+const getDb = require("@utils/getDb");
+const toCamelCase = require("@utils/toCamelCase");
 
 class FavoriteRepository {
   static ALLOWED_SORTS = {

@@ -1,7 +1,7 @@
 "use strict";
 
 const { body, param, query } = require("express-validator");
-const { createValidation } = require("@middleware/validationHelper.js");
+const { createValidation } = require("@middleware/validationHelper");
 
 const checkNicknameUpdate = createValidation(
   body("newNickname").custom((value) => {

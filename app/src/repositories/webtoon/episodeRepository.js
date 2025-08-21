@@ -1,7 +1,7 @@
 "use strict";
 
-const getDb = require("@utils/getDb.js");
-const toCamelCase = require("@utils/toCamelCase.js");
+const getDb = require("@utils/getDb");
+const toCamelCase = require("@utils/toCamelCase");
 
 class EpisodeRepository {
   // 웹툰에 맞는 전체 회차 불러오기
