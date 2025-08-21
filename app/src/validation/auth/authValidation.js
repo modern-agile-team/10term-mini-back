@@ -1,7 +1,7 @@
 "use strict";
 
 const { body } = require("express-validator");
-const { createValidation } = require("@middleware/validationHelper.js");
+const { createValidation } = require("@middleware/validationHelper");
 
 const checkAddUser = createValidation(
   body("username")

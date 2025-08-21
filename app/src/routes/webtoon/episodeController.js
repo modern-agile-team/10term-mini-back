@@ -31,6 +31,18 @@ module.exports = {
       },
     });
   },
+  // 회차 조회수 증가
+  addEpisodeView: async (req, res) => {
+    const { episodeId } = req.params;
+    await episodeService.addEpisodeView(episodeId);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "조회수 증가 성공",
+      },
+    });
+  },
 
   // 별점 추가/업데이트
   rateEpisode: async (req, res) => {

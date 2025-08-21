@@ -1,6 +1,6 @@
 "use strict";
 
-const CommentService = require("@services/comment/commentService.js");
+const CommentService = require("@services/comment/commentService");
 const commentService = new CommentService();
 
 module.exports = {

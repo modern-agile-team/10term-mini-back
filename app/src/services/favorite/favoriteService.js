@@ -1,10 +1,10 @@
 "use strict";
 
-const WebtoonRepository = require("@repositories/webtoon/webtoonRepository.js");
-const UserRepository = require("@repositories/user/userRepository.js");
-const FavoriteRepository = require("@repositories/favorite/favoriteRepository.js");
+const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
+const UserRepository = require("@repositories/user/userRepository");
+const FavoriteRepository = require("@repositories/favorite/favoriteRepository");
 const CustomError = require("@utils/customError");
-const pool = require("@config/db.js");
+const pool = require("@config/db");
 
 class FavoriteService {
   constructor() {
