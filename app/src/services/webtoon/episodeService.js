@@ -1,7 +1,7 @@
 "use strict";
 
 const EpisodeRepository = require("@repositories/webtoon/episodeRepository");
-const webtoonRepository = require("@repositories/webtoon/webtoonRepository.js");
+const webtoonRepository = require("@repositories/webtoon/webtoonRepository");
 const CustomError = require("@utils/customError");
 const pool = require("@config/db");
 
