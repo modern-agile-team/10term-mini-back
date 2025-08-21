@@ -21,7 +21,8 @@ module.exports = {
   // 웹툰 상세내용 조회
   getDetail: async (req, res) => {
     const webtoonId = req.params.webtoonId;
-    const detail = await webtoonService.getWebtoonDetail(webtoonId);
+    const userId = req.user?.id || null;
+    const detail = await webtoonService.getWebtoonDetail(webtoonId, userId);
     return res.status(200).json({
       success: true,
       data: {

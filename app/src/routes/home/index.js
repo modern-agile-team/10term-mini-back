@@ -28,7 +28,12 @@ router.post("/api/auth/logout", authCtrl.logout);
 
 // 웹툰 및 에피소드 조회 API
 router.get("/api/webtoons", webtoonValidation.checkWebtoonQuery, webtoonCtrl.getWebtoons);
-router.get("/api/webtoons/:webtoonId", webtoonValidation.checkWebtoonId, webtoonCtrl.getDetail);
+router.get(
+  "/api/webtoons/:webtoonId",
+  optionalAuth,
+  webtoonValidation.checkWebtoonId,
+  webtoonCtrl.getDetail
+);
 router.post(
   "/api/webtoons/:webtoonId/favorite",
   requireAuth,
