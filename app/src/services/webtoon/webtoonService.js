@@ -4,13 +4,6 @@ const WebtoonRepository = require("@repositories/webtoon/webtoonRepository");
 const UserRepository = require("@repositories/user/userRepository");
 const CustomError = require("@utils/customError");
 
-const DB_COLUMN = {
-  favorite: "favorite_count",
-  updated: "updated_at",
-  view: "view_count",
-  rate: "rating_avg",
-};
-
 class WebtoonService {
   constructor() {
     this.webtoonRepository = new WebtoonRepository();
@@ -18,14 +11,12 @@ class WebtoonService {
   }
 
   async getWebtoons({ day, sort }) {
-    const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
-
     let webtoons;
 
     if (day) {
-      webtoons = await this.webtoonRepository.getWebtoonsByDaySorted(day, dbSortKey);
+      webtoons = await this.webtoonRepository.getWebtoonsByDaySorted(day, sort);
     } else {
-      webtoons = await this.webtoonRepository.getAllWebtoonsSorted(dbSortKey);
+      webtoons = await this.webtoonRepository.getAllWebtoonsSorted(sort);
     }
     return webtoons;
   }

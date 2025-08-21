@@ -3,11 +3,20 @@
 const pool = require("@config/db");
 const toCamelCase = require("@utils/toCamelCase.js");
 
+const DB_COLUMN = {
+  favorite: "favorite_count",
+  updated: "updated_at",
+  view: "wt_view_count",
+  rate: "rating_avg",
+};
+
 class WebtoonRepository {
   // 요일 기준 정렬 조회
   async getWebtoonsByDaySorted(day, sort) {
     let query;
-    if (sort === "rating_avg") {
+    const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
+
+    if (dbSortKey === "rating_avg") {
       query = `
         SELECT 
           wt.id,
@@ -37,7 +46,7 @@ class WebtoonRepository {
         LEFT JOIN episodes AS ep ON wt.id = ep.webtoon_id
         WHERE wd.day_of_week = ?
         GROUP BY wt.id
-        ORDER BY wt.${sort} DESC;
+        ORDER BY wt.${dbSortKey} DESC;
       `;
     }
     const [rows] = await pool.query(query, [day]);
@@ -46,7 +55,8 @@ class WebtoonRepository {
   // 정렬 조건 기준 전체 조회
   async getAllWebtoonsSorted(sort) {
     let query;
-    if (sort === "rating_avg") {
+    const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
+    if (dbSortKey === "rating_avg") {
       query = `
       SELECT 
         wt.id,
@@ -72,7 +82,7 @@ class WebtoonRepository {
       LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
       LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
       GROUP BY wt.id
-      ORDER BY wt.${sort} DESC;
+      ORDER BY wt.${dbSortKey} DESC;
     `;
     }
     const [rows] = await pool.query(query);
