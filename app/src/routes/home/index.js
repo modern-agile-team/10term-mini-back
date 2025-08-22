@@ -137,4 +137,7 @@ router.delete(
   userCtrl.removeSelectedFavorites
 );
 
+// 웹툰 검색 API
+router.get("/api/search/webtoons", webtoonValidation.checkSearchQuery, webtoonCtrl.searchWebtoons);
+
 module.exports = router;

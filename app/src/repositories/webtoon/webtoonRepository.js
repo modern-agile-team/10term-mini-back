@@ -115,15 +115,40 @@ class WebtoonRepository {
   }
 
   // 웹툰 조회수 증가
-  async increaseWebtoonViewCountByEpisodeId(conn, episodeId) {
+  async increaseWebtoonViewCountByEpisodeId(episodeId, conn) {
+    const db = getDb(conn);
     const query = `
       UPDATE webtoons wt
       JOIN episodes ep ON ep.webtoon_id = wt.id
       SET wt.wt_view_count = wt.wt_view_count + 1
       WHERE ep.id = ?;
     `;
-    const [ret] = await conn.query(query, [episodeId]);
+    const [ret] = await db.query(query, [episodeId]);
     return ret.affectedRows;
+  }
+
+  async getByKeyword(keyword, conn) {
+    const db = getDb(conn);
+    const query = `
+      SELECT 
+        wt.id, 
+        wt.title, 
+        wt.writer, 
+        wt.illustrator,
+        wt.description,
+        wt.updated_at,
+        wt.thumbnail_url,
+        JSON_ARRAYAGG(wd.day_of_week) AS weekdays
+      FROM webtoons AS wt
+      LEFT JOIN webtoon_weekdays AS wtd ON wt.id = wtd.webtoon_id
+      LEFT JOIN weekdays AS wd ON wtd.weekdays_key = wd.id
+      WHERE wt.title LIKE ? OR wt.writer LIKE ?
+      GROUP BY wt.id
+      ORDER BY wt.favorite_count DESC;
+    `;
+
+    const [rows] = await db.query(query, [`%${keyword}%`, `%${keyword}%`]);
+    return toCamelCase(rows);
   }
 }
 

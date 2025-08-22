@@ -71,14 +71,15 @@ class EpisodeRepository {
   }
 
   // 회차 조회수 증가
-  async increaseEpisodeViewCount(conn, episodeId) {
+  async increaseEpisodeViewCount(episodeId, conn) {
+    const db = getDb(conn);
     const query = `
       UPDATE episodes
       SET
         ep_view_count = ep_view_count + 1
       WHERE id = ?;
     `;
-    const [ret] = await conn.query(query, [episodeId]);
+    const [ret] = await db.query(query, [episodeId]);
     return ret.affectedRows;
   }
 

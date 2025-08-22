@@ -31,4 +31,17 @@ module.exports = {
       },
     });
   },
+
+  searchWebtoons: async (req, res) => {
+    const { keyword } = req.query;
+    const results = await webtoonService.searchWebtoons(keyword);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        message: "웹툰 검색 성공",
+        content: results,
+      },
+    });
+  },
 };
