@@ -2,6 +2,9 @@
 
 const express = require("express");
 const router = express.Router();
+router.get("/", (req, res) => {
+  res.send("Hello Induktoon!");
+});
 
 // 컨트롤러
 const authCtrl = require("@routes/auth/authController");
