@@ -16,9 +16,10 @@ class WebtoonRepository {
     const db = getDb(conn);
     let query;
     const dbSortKey = DB_COLUMN[sort] ?? DB_COLUMN.favorite;
+
     if (dbSortKey === "rating_avg") {
       query = `
-        SELECT DISTINCT
+        SELECT
           wt.id,
           wt.title,
           wd.day_of_week AS weekday,
@@ -37,14 +38,20 @@ class WebtoonRepository {
       `;
     } else {
       query = `
-        SELECT DISTINCT
+        SELECT
           wt.id,
           wt.title,
           wd.day_of_week AS weekday,
-          wt.thumbnail_url
+          wt.thumbnail_url,
+          ROUND(IFNULL(e.avg_rating, 0), 2) AS average_rating
         FROM webtoons wt
         JOIN webtoon_weekdays wtd ON wt.id = wtd.webtoon_id
         JOIN weekdays wd ON wd.id = wtd.weekdays_key
+        LEFT JOIN (
+          SELECT webtoon_id, AVG(rating_avg) AS avg_rating
+          FROM episodes
+          GROUP BY webtoon_id
+        ) e ON e.webtoon_id = wt.id
         WHERE wd.day_of_week = ?
         ORDER BY wt.${dbSortKey} DESC;
       `;
