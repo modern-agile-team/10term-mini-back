@@ -38,7 +38,8 @@ class EpisodeRepository {
           ep.full_img_url,
           wt.title AS webtoon_title,
           NULL AS hasRated,
-          NULL AS myRating
+          NULL AS myRating,
+          ep.rating_count
         FROM episodes ep
         JOIN webtoons wt ON ep.webtoon_id = wt.id
         WHERE ep.id = ?
@@ -56,7 +57,8 @@ class EpisodeRepository {
         ep.full_img_url,
         wt.title AS webtoon_title,
         (ra.id IS NOT NULL) AS hasRated,
-        ra.rating AS myRating
+        ra.rating AS myRating,
+        ep.rating_count
       FROM episodes ep
       JOIN webtoons wt ON ep.webtoon_id = wt.id
       LEFT JOIN ratings ra
