@@ -1,10 +1,8 @@
 ## 📌 프로젝트 소개
 모던 애자일 10기 미니 프로젝트로 진행한 **네이버 웹툰 클론코딩** 백엔드 레포지토리입니다.
 
-<!-- 
 ## 🌐 배포
 https://www.induktoon.site
--->
 
 ## 🛠️ 사용 스택
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
