@@ -4,7 +4,7 @@
 ## 🌐 배포
 👉 [인덕툰(IndukToon) 바로가기](https://www.induktoon.site)
 
-## 🛠️ 사용 스택
+## 🛠️ 기술 스택
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
